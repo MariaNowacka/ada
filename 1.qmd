@@ -1,0 +1,290 @@
+---
+title: "Analiza danych ankietowych"
+subtitle: "Sprawozdanie 1"
+author:
+  - Zuzanna Nasiłowska
+  - Maria Nowacka
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    fig-cap-location: top
+    documentclass: article
+    keep-tex: true
+fontsize: 12pt
+lang: pl
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+\newpage
+
+# Część 1.
+
+## Zadanie 1
+W pewnej dużej firmie technologicznej przeprowadzono ankietę mającą na celu ocenę skuteczności programów szkoleniowych dla pracowników. Wzięło w niej udział 200 losowo wybranych osób (losowanie proste ze zwracaniem).
+
+### Zadanie 1.1
+
+Wczytamy dane.
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(readr)
+library(dplyr)
+ankieta <- read.csv("ankieta.csv", sep=";", fileEncoding = "Latin2")
+dim(ankieta)
+```
+Dane zawierają 200 wierszy oraz 8 kolumn.
+
+Sprawdzamy typy zmiennych.
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+#view(ankieta)
+sapply(ankieta, class)
+
+```
+Wszystkie zmienne o typie *character* przekształcamy na typ *factor*.
+
+```{r, echo = FALSE, warning = FALSE}
+
+char_columns <- sapply(ankieta, is.character)
+ankieta[ , char_columns] <- lapply(ankieta[ , char_columns], 
+                                as.factor)
+```
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+#| echo: false 
+
+
+cat("Liczba wartości brakujących wynosi:", sum(is.na(ankieta)), "\n")
+```
+
+Sprawdzamy, czy typy zmiennych zostały prawidłowo rozpoznane.
+
+1.  Zmienne ilościowe (typ numeric)
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+#| echo: false 
+
+ilosciowe <- which(sapply(ankieta, is.numeric))
+liczba_ilosciowych <- length(ilosciowe)
+ilosciowe
+```
+
+2.  Zmienne jakościowe (typ factor)
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+#| echo: false 
+
+factors <- which(sapply(ankieta, is.factor))
+liczba_jakosciowych <- length(factors)
+factors
+
+```
+
+### Zadanie 1.2
+ Utwórz zmienną WIEK_KAT przeprowadzając kategoryzacją zmiennej WIEK korzystając z nastąpujących przedziałów: do 35 lat, między 36 a 45 lat, między 46 a 55 lat,
+ powyżej 55 lat.
+
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+
+ankieta$WIEK_KAT <- cut(ankieta$WIEK, breaks = c(-Inf,35,45,55,Inf), 
+                                      labels = c("<35", "36-40", "46-55", ">55"), 
+                        right= TRUE)
+attach(ankieta)
+```
+
+### Zadanie 1.3
+Sporządź tablice liczności dla zmiennych: DZIAŁ, STAŻ, CZY_KIER, PŁEĆ, WIEK_KAT. Sformułuj wnioski.
+```{r, echo = FALSE, warning = FALSE}
+table(DZIAŁ)
+table(STAŻ)
+table(CZY_KIER)
+table(PŁEĆ)
+table(WIEK_KAT)
+```
+Na podstawie tabel liczności możemy zauważyć, że:
+  - W firmie prawie połowa pracowników jest zatrudniona w dziale "PD" (Dział Produktowy). Drugi największy dział to "MK" (Marketing), następnie "HR" (Dział zasobów ludzkich). Najmniej pracowników jest zatrudnionych w dziale "IT".
+  - NAjwięcej osób pracuje w firmie między jednym a trzema latami. Mało osób ma staż ponad 3 lata.
+  - W firmie 27 osób ma stanowisko kierownicze.
+  - Większość pracowników to mężczyźni.
+  - Ponad połowa pracowników jest w wieku 36-40 lat.
+
+### Zadanie 1.4
+ Sporządź wykresy kołowe oraz wykresy słupkowe dla zmiennych: PYT_1 oraz PYT_2. Sformułuj wnioski.
+```{r, dev="cairo_pdf", echo = FALSE, warning = FALSE}
+library(ggplot2)
+
+pie(table(PYT_1))
+
+ggplot(ankieta, aes(x="", fill = factor(PYT_1))) +
+  geom_bar(width = 1) + 
+  coord_polar(theta = "y") + 
+  labs(fill = "PYT_1", title = "kołowy") +
+  theme_minimal()
+
+ggplot(ankieta, aes(x= factor(PYT_1))) +
+  geom_bar(fill = 'darkseagreen') + 
+  labs(x = "PYT_1", y = "Liczba odp", title = 'słupkowy') +
+  theme_minimal()
+```
+Na pytanie "Jak bardzo zgadzasz si˛ e ze stwierdzeniem, ˙ ze firma zapewnia odpowiednie wsparcie i materiały umożliwiające skuteczne wykorzystanie w praktyce wiedzy zdobytej w trakcie szkoleń?"
+
+
+```{r, dev="cairo_pdf", echo = FALSE, warning = FALSE}
+pie(table(PYT_2))
+
+ggplot(ankieta, aes(x="", fill = factor(PYT_2))) +
+  geom_bar(width = 1) + 
+  coord_polar(theta = "y") + 
+  labs(fill = "PYT_1", title = "kołowy") +
+  theme_minimal()
+
+ggplot(ankieta, aes(x= factor(PYT_2))) +
+  geom_bar(fill = 'darkseagreen') + 
+  labs(x = "PYT_1", y = "Liczba odp", title = 'słupkowy') +
+  theme_minimal()
+```
+### Zadanie 1.5
+## Zadanie 6
+
+```{r, echo = FALSE, warning = FALSE}
+table(PYT_2, PYT_3)
+```
+
+## Zadanie 7
+
+```{r}
+#ankieta$CZY_ZADOW <- ifelse(ankieta$PYT_2 %in% c(-2, -1), "Nie zgadzam się",
+#                            ifelse(ankieta$PYT_2 %in% c(1, 2), "Zgadzam się", NA)
+#                            
+```
+
+```{r, echo = FALSE, warning = FALSE}
+ankieta <- ankieta %>% 
+  mutate(
+    CZY_ZADOW = case_when(
+      PYT_2 %in% c(-2, -1) ~ "Niezadowolona",
+      PYT_2 %in% c(2, 1) ~ "Zadowolona",
+      PYT_2 %in% c(0) ~ "-"
+    )) 
+view(ankieta)
+```
+
+## Zadanie 8
+
+```{r, dev="cairo_pdf", echo = FALSE, warning = FALSE}
+library(vcd)
+library(grid)
+MyColors = c('pink', 'lightblue', 'darkseagreen', 'orange')
+mosaicplot(table(ankieta$CZY_ZADOW, ankieta$DZIAŁ), color = MyColors, xlab = "zadowolenie", ylab = "dział", title = "porównanie" )
+
+```
+## Część 2.
+
+## zadanie 2
+
+```{r, echo = FALSE, warning = FALSE}
+PYT_1 <-  factor(PYT_1, levels = -2:2)
+class(PYT_1)
+```
+```{r, dev="cairo_pdf", echo = FALSE, warning = FALSE}
+ggplot(ankieta, aes(x= factor(PYT_1))) +
+  geom_bar(fill = 'darkseagreen') + 
+  labs(x = "PYT_1", y = "Liczba odp", title = 'słupkowy') +
+  theme_minimal()
+```
+```{r, dev="cairo_pdf", echo = FALSE, warning = FALSE}
+library(likert)
+
+likert_df <- likert(as.data.frame(PYT_1))
+likert_df2 <- likert(as.data.frame(PYT_1), grouping = ankieta$CZY_KIER)
+likert_df2
+
+likert.bar.plot(likert_df)
+likert.bar.plot(likert_df2)
+summary(PYT_1)
+likert.density.plot(likert_df)
+#likert.density.plot(likert_df2)
+
+```
+## Zadanie 3
+```{r}
+library(stats)
+#ankieta[sample(20),]
+ankieta[sample(1:nrow(ankieta), size = 0.1*nrow(ankieta), replace = FALSE),]
+ankieta[sample(1:nrow(ankieta), size = 0.1*nrow(ankieta), replace = TRUE),]
+```
+## zadanie 4
+
+```{r}
+symulacja <- function(N,n, p) {
+  
+  wyniki <- numeric(N)
+  
+  for(i in 1:N) {
+    bernoulli <- rbinom(n = n, size = 1, prob = p)
+    wyniki[i] <- sum(bernoulli)
+  }
+  
+  return(wyniki)
+}
+n <- 200
+p <- 0.2
+N <- 10000
+
+samples_1 <- symulacja(N, n, p)
+wartość_oczekiwana_emp <- mean(samples_1)
+war_emp <- var(samples_1)
+
+wartość_oczekiwana_teo <- n * p
+wariancja_teo <- n * p *(1 - p)
+
+cat("Teoretyczna wartość oczekiwana: ", wartość_oczekiwana_teo, "\n")
+cat("Teoretyczna wariancja: ", wariancja_teo, "\n")
+
+cat("empiryczna wartość oczekiwana: ", wartość_oczekiwana_emp, "\n")
+cat("empiryczna wariancja: ", war_emp, "\n")
+
+
+```
+## zadanie 5
+
+```{r}
+ps <-  c(0.1, 0.23, 0.47, 0.17, 0.03)
+k <- length(ps)
+sum(ps)
+N <- 10000
+csum = cumsum(ps)
+X <- rep(0, k) 
+for (i in 1:N){
+  Z <- runif(1)
+  for (j in 1:k){
+    if (Z<csum[j]){
+    X[j] <- X[j] + 1
+    break
+  }
+  }
+}
+X/N
+```
+```{r}
+ps2 <-  rep(0.2, 5)
+k <- length(ps2)
+sum(ps)
+N <- 10000
+csum2 = cumsum(ps2)
+Y <- rep(0, k) 
+for (i in 1:N){
+  Z <- runif(1)
+  for (j in 1:k){
+    if (Z<csum2[j]){
+    Y[j] <- Y[j] + 1
+    break
+  }
+  }
+}
+Y/N
+```
