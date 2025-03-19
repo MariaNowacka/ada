@@ -130,7 +130,7 @@ ggplot(ankieta, aes(x= factor(PYT_1))) +
   labs(x = "PYT_1", y = "Liczba odp", title = 'słupkowy') +
   theme_minimal()
 ```
-Na pytanie "Jak bardzo zgadzasz si˛ e ze stwierdzeniem, ˙ ze firma zapewnia odpowiednie wsparcie i materiały umożliwiające skuteczne wykorzystanie w praktyce wiedzy zdobytej w trakcie szkoleń?"
+Pytanie 1 brzmiało: "Jak bardzo zgadzasz się ze stwierdzeniem, ˙ ze firma zapewnia odpowiednie wsparcie i materiały umożliwiające skuteczne wykorzystanie w praktyce wiedzy zdobytej w trakcie szkoleń?" większość ankietowanych odpowiedziała 1 - "Zgadzam się" lub 2 - "Zdecydowanie się zgadzam". 
 
 
 ```{r, dev="cairo_pdf", echo = FALSE, warning = FALSE}
@@ -148,13 +148,13 @@ ggplot(ankieta, aes(x= factor(PYT_2))) +
   theme_minimal()
 ```
 ### Zadanie 1.5
-## Zadanie 6
+### Zadanie 1.6
 
 ```{r, echo = FALSE, warning = FALSE}
 table(PYT_2, PYT_3)
 ```
 
-## Zadanie 7
+### Zadanie 1.7
 
 ```{r}
 #ankieta$CZY_ZADOW <- ifelse(ankieta$PYT_2 %in% c(-2, -1), "Nie zgadzam się",
@@ -168,12 +168,12 @@ ankieta <- ankieta %>%
     CZY_ZADOW = case_when(
       PYT_2 %in% c(-2, -1) ~ "Niezadowolona",
       PYT_2 %in% c(2, 1) ~ "Zadowolona",
-      PYT_2 %in% c(0) ~ "-"
+      TRUE ~ NA_character_
     )) 
 view(ankieta)
 ```
 
-## Zadanie 8
+### Zadanie 1.8
 
 ```{r, dev="cairo_pdf", echo = FALSE, warning = FALSE}
 library(vcd)
@@ -288,3 +288,63 @@ for (i in 1:N){
 }
 Y/N
 ```
+# Część 3.
+
+## Zadanie 6.
+
+```{r}
+przedzial <- function(alpha, sukces, n = NULL){
+  if(is.null(n)){
+    data <-  sukces
+    sukces <- sum(data == "1")
+    n <- length(data)
+  }
+  if(sukces == 0){
+    p_dol <-  0
+  } else{
+    p_dol <-  qbeta(alpha, sukces, n-sukces - 1)
+  }
+  if(sukces == n){
+    p_gora <-  1
+  } else{
+    p_gora <- qbeta(alpha, sukces + 1, n - sukces) 
+  }
+  return(c(p_dol, p_gora))
+}
+  
+przedzial(0.05, c(0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,1,0,1))
+  
+```
+## Zadanie 7
+```{r, echo = FALSE, warning = FALSE}
+ankieta <- ankieta %>% 
+  mutate(
+    CZY_ZADOW2 = case_when(
+      PYT_3 %in% c(-2, -1) ~ "Niezadowolona",
+      PYT_3 %in% c(2, 1) ~ "Zadowolona",
+      PYT_3 %in% c(0)  ~ "-",
+    )) 
+przedzial_ <- function(alpha, sukces, n = NULL){
+  if(is.null(n)){
+    data <-  sukces
+    sukces <- sum(data == "Zadowolona")
+    n <- length(data)
+  }
+  if(sukces == 0){
+    p_dol <-  0
+  } else{
+    p_dol <-  qbeta(alpha/2, sukces, n-sukces - 1)
+  }
+  if(sukces == n){
+    p_gora <-  1
+  } else{
+    p_gora <- qbeta(1-alpha/2, sukces + 1, n - sukces) 
+  }
+  return(c(p_dol, p_gora))
+}
+przedzial_(0.05, ankieta$CZY_ZADOW)
+przedzial_(0.05, ankieta$CZY_ZADOW2)
+
+```
+## Zadanie 8
+
