@@ -130,7 +130,7 @@ ggplot(ankieta, aes(x= factor(PYT_1))) +
   labs(x = "PYT_1", y = "Liczba odp", title = 'słupkowy') +
   theme_minimal()
 ```
-Pytanie 1 brzmiało: "Jak bardzo zgadzasz się ze stwierdzeniem, ˙ ze firma zapewnia odpowiednie wsparcie i materiały umożliwiające skuteczne wykorzystanie w praktyce wiedzy zdobytej w trakcie szkoleń?" większość ankietowanych odpowiedziała 1 - "Zgadzam się" lub 2 - "Zdecydowanie się zgadzam". 
+Pytanie 1 brzmiało: "Jak bardzo zgadzasz się ze stwierdzeniem, ˙że firma zapewnia odpowiednie wsparcie i materiały umożliwiające skuteczne wykorzystanie w praktyce wiedzy zdobytej w trakcie szkoleń?" większość ankietowanych odpowiedziała 1 - "Zgadzam się" lub 2 - "Zdecydowanie się zgadzam". Prawie 1/4 osób nie ma zdania na ten temat. Możemy więc wnioskować, że więszość firmy jest zadowolona z przeprowadzanych szkoleń.
 
 
 ```{r, dev="cairo_pdf", echo = FALSE, warning = FALSE}
@@ -147,6 +147,8 @@ ggplot(ankieta, aes(x= factor(PYT_2))) +
   labs(x = "PYT_1", y = "Liczba odp", title = 'słupkowy') +
   theme_minimal()
 ```
+Na pytanie drugie, o treści "Jak bardzo zgadzasz si˛ e ze stwierdzeniem, ˙ ze firma oferuje szkolenia dostosowane do twoich potrzeb, wspieraj ˛ ac twój rozwój zawodowy i szanse na awans?" nieco ponad połowa osób odpowiedziała "Zdecydowanie się zgadzam", jednak prawie wszyscy inni pracownicy dali odpowiedź "Nie zgadzam się" lub "ZCecydpwanie się nie zgadzam", z przewagą tych drugich. Na to pytanie pracownicy udzielili bardzo skrajnych odpowiedzi.
+
 ### Zadanie 1.5
 ### Zadanie 1.6
 
@@ -333,12 +335,12 @@ przedzial_ <- function(alpha, sukces, n = NULL){
   if(sukces == 0){
     p_dol <-  0
   } else{
-    p_dol <-  qbeta(alpha/2, sukces, n-sukces - 1)
+    p_dol <-  qbeta(alpha/2, sukces, n-sukces + 1)
   }
   if(sukces == n){
     p_gora <-  1
   } else{
-    p_gora <- qbeta(1-alpha/2, sukces + 1, n - sukces) 
+    p_gora <- qbeta(1-(alpha/2), sukces + 1, n - sukces) 
   }
   return(c(p_dol, p_gora))
 }
