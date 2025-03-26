@@ -6,12 +6,8 @@ author:
   - Maria Nowacka
 format:
   pdf:
-    toc: true
     number-sections: true
-    fig-cap-location: top
-    documentclass: article
-    keep-tex: true
-fontsize: 12pt
+toc: true
 lang: pl
 execute:
   echo: true
@@ -24,11 +20,12 @@ execute:
 # Część 1.
 
 ## Zadanie 1
+
 W pewnej dużej firmie technologicznej przeprowadzono ankietę mającą na celu ocenę skuteczności programów szkoleniowych dla pracowników. Wzięło w niej udział 200 losowo wybranych osób (losowanie proste ze zwracaniem).
 
 ### Zadanie 1.1
 
-Wczytamy dane.
+Wczytamy dane i sprawdzimy ich rozmiar.
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 library(tidyverse)
@@ -37,14 +34,17 @@ library(dplyr)
 ankieta <- read.csv("ankieta.csv", sep=";", fileEncoding = "Latin2")
 dim(ankieta)
 ```
+
 Dane zawierają 200 wierszy oraz 8 kolumn.
 
 Sprawdzamy typy zmiennych.
+
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 #view(ankieta)
 sapply(ankieta, class)
 
 ```
+
 Wszystkie zmienne o typie *character* przekształcamy na typ *factor*.
 
 ```{r, echo = FALSE, warning = FALSE}
@@ -53,6 +53,7 @@ char_columns <- sapply(ankieta, is.character)
 ankieta[ , char_columns] <- lapply(ankieta[ , char_columns], 
                                 as.factor)
 ```
+
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 #| echo: false 
 
@@ -84,9 +85,8 @@ factors
 ```
 
 ### Zadanie 1.2
- Utwórz zmienną WIEK_KAT przeprowadzając kategoryzacją zmiennej WIEK korzystając z nastąpujących przedziałów: do 35 lat, między 36 a 45 lat, między 46 a 55 lat,
- powyżej 55 lat.
 
+Utwórz zmienną WIEK_KAT przeprowadzając kategoryzacją zmiennej WIEK korzystając z nastąpujących przedziałów: do 35 lat, między 36 a 45 lat, między 46 a 55 lat, powyżej 55 lat.
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
@@ -97,7 +97,9 @@ attach(ankieta)
 ```
 
 ### Zadanie 1.3
+
 Sporządź tablice liczności dla zmiennych: DZIAŁ, STAŻ, CZY_KIER, PŁEĆ, WIEK_KAT. Sformułuj wnioski.
+
 ```{r, echo = FALSE, warning = FALSE}
 table(DZIAŁ)
 table(STAŻ)
@@ -105,64 +107,119 @@ table(CZY_KIER)
 table(PŁEĆ)
 table(WIEK_KAT)
 ```
+
 Na podstawie tabel liczności możemy zauważyć, że:
-  - W firmie prawie połowa pracowników jest zatrudniona w dziale "PD" (Dział Produktowy). Drugi największy dział to "MK" (Marketing), następnie "HR" (Dział zasobów ludzkich). Najmniej pracowników jest zatrudnionych w dziale "IT".
-  - NAjwięcej osób pracuje w firmie między jednym a trzema latami. Mało osób ma staż ponad 3 lata.
-  - W firmie 27 osób ma stanowisko kierownicze.
-  - Większość pracowników to mężczyźni.
-  - Ponad połowa pracowników jest w wieku 36-40 lat.
+
+-   W firmie prawie połowa pracowników jest zatrudniona w dziale **"PD"** (Dział Produktowy). Drugi największy dział to "MK" (Marketing), następnie "HR" (Dział zasobów ludzkich). Najmniej pracowników jest zatrudnionych w dziale "IT".
+
+<!-- -->
+
+-   Najwięcej osób pracuje w firmie między jednym a trzema latami. Mało osób ma staż ponad 3 lata.
+
+-   W firmie 27 osób ma stanowisko kierownicze (zdecydowana mniejszość)
+
+-   Większość pracowników to **mężczyźni**.
+
+-   Ponad połowa pracowników jest w wieku **36-40 lat**.
 
 ### Zadanie 1.4
- Sporządź wykresy kołowe oraz wykresy słupkowe dla zmiennych: PYT_1 oraz PYT_2. Sformułuj wnioski.
+
+Sporządź wykresy kołowe oraz wykresy słupkowe dla zmiennych: PYT_1 oraz PYT_2. Sformułuj wnioski.
+
 ```{r, dev="cairo_pdf", echo = FALSE, warning = FALSE}
 library(ggplot2)
 
-pie(table(PYT_1))
+#pie(table(PYT_1))
 
 ggplot(ankieta, aes(x="", fill = factor(PYT_1))) +
   geom_bar(width = 1) + 
   coord_polar(theta = "y") + 
-  labs(fill = "PYT_1", title = "kołowy") +
+  labs(fill = "PYT_1", title = "Rozkład odpowiedzi na pytanie 1") +
   theme_minimal()
 
 ggplot(ankieta, aes(x= factor(PYT_1))) +
   geom_bar(fill = 'darkseagreen') + 
-  labs(x = "PYT_1", y = "Liczba odp", title = 'słupkowy') +
+  labs(x = "PYT_1", y = "Liczba odp", title = 'Rozkład odpowiedzi na pytanie 1') +
   theme_minimal()
 ```
-Pytanie 1 brzmiało: "Jak bardzo zgadzasz się ze stwierdzeniem, ˙że firma zapewnia odpowiednie wsparcie i materiały umożliwiające skuteczne wykorzystanie w praktyce wiedzy zdobytej w trakcie szkoleń?" większość ankietowanych odpowiedziała 1 - "Zgadzam się" lub 2 - "Zdecydowanie się zgadzam". Prawie 1/4 osób nie ma zdania na ten temat. Możemy więc wnioskować, że więszość firmy jest zadowolona z przeprowadzanych szkoleń.
 
+**Pytanie 1** brzmiało: "Jak bardzo zgadzasz się ze stwierdzeniem, ˙że firma zapewnia odpowiednie wsparcie i materiały umożliwiające skuteczne wykorzystanie w praktyce wiedzy zdobytej w trakcie szkoleń?" większość ankietowanych odpowiedziała 1 - "Zgadzam się" lub 2 - "Zdecydowanie się zgadzam". Prawie 1/4 osób nie ma zdania na ten temat. Możemy więc wnioskować, że więszość firmy jest zadowolona z przeprowadzanych szkoleń.
 
 ```{r, dev="cairo_pdf", echo = FALSE, warning = FALSE}
-pie(table(PYT_2))
+#pie(table(PYT_2))
 
 ggplot(ankieta, aes(x="", fill = factor(PYT_2))) +
   geom_bar(width = 1) + 
   coord_polar(theta = "y") + 
-  labs(fill = "PYT_1", title = "kołowy") +
+  labs(fill = "PYT_2", title = "Rozkład odpowiedzi na pytanie 2") +
   theme_minimal()
 
 ggplot(ankieta, aes(x= factor(PYT_2))) +
   geom_bar(fill = 'darkseagreen') + 
-  labs(x = "PYT_1", y = "Liczba odp", title = 'słupkowy') +
+  labs(x = "PYT_2", y = "Liczba odp", title = 'Rozkład odpowiedzi na pytanie 2') +
   theme_minimal()
 ```
-Na pytanie drugie, o treści "Jak bardzo zgadzasz si˛ e ze stwierdzeniem, ˙ ze firma oferuje szkolenia dostosowane do twoich potrzeb, wspieraj ˛ ac twój rozwój zawodowy i szanse na awans?" nieco ponad połowa osób odpowiedziała "Zdecydowanie się zgadzam", jednak prawie wszyscy inni pracownicy dali odpowiedź "Nie zgadzam się" lub "ZCecydpwanie się nie zgadzam", z przewagą tych drugich. Na to pytanie pracownicy udzielili bardzo skrajnych odpowiedzi.
+
+Na **pytanie 2**, o treści "Jak bardzo zgadzasz się ze stwierdzeniem, że firma oferuje szkolenia dostosowane do twoich potrzeb, wspierając twój rozwój zawodowy i szanse na awans?" nieco ponad połowa osób odpowiedziała "Zdecydowanie się zgadzam", jednak prawie wszyscy inni pracownicy dali odpowiedź "Nie zgadzam się" lub "Zdecydowanie się nie zgadzam", z przewagą tych drugich. Na to pytanie pracownicy udzielili bardzo skrajnych odpowiedzi. Pomimo zadowolenia połowy pracowników, warto zbadać ten temat głębiej i przeprowadzić szkolenia dla tych, którzy nie czują się odpowiednio wspierani przez firmę.
 
 ### Zadanie 1.5
+
+Sporządź tablice wielodzielcze dla par zmiennych: PYT_1 i DZIAŁ, PYT_1 i STAŻ, PYT_1 i CZY_KIER, PYT_1i PŁEĆ C oraz PYT_1 i WIEK_KAT. Sformułuj wnioski.
+
+```{r, echo = FALSE, warning = FALSE}
+table(PYT_1, DZIAŁ)
+table(PYT_1, STAŻ)
+table(PYT_1, CZY_KIER)
+table(PYT_1, PŁEĆ)
+table(PYT_1, WIEK_KAT)
+
+```
+
+**Wnioski** (*to jeszcze jakoś ładniej ująć w słowa*)
+
+zadowolenie = zgadza się z stwierdzeniem
+
+-   dział:
+
+    -   najwięcej niezadowolonych osób jest w dziale PD ale to największy dział
+
+    -   IT wydaje się być w większości zadowolony
+
+-   staż:
+
+    -   dla osób z niższym stażem około połowa osób jest zadowolona, reszta nie ma zdania lub jest niezadowolona.
+
+    -   dla osob ze stażem miedzy 1 a 3 lata mamy bardzo dużą grupę osób zadowolonych, jednak całkiem sporo osób zaznaczyło opcję "nie mam zdania".
+
+-   kierownictwo
+
+    -   około 1/4 kierowników jest niezadowolona.
+
+    -   Dla nie-kierowników odpowiedzi rozkładają się bardziej w kierunku pozytywnym
+
+-   płeć:
+
+    -   kobiety są bardziej zadowolone (procentowo)
+
+-   wiek:
+
+    -   największy odsetek niezadowolonych osób jest wśród najmłodszych pracowników a najmniejszy w grupie 46-55 lat
+
 ### Zadanie 1.6
+
+Sporządź tablicę wielodzielczą dla pary zmiennych: PYT_2 i PYT_3. Sformułuj wnioski.
 
 ```{r, echo = FALSE, warning = FALSE}
 table(PYT_2, PYT_3)
 ```
 
+**Wnioski**
+
+Duże grupy osób zostały przy swojej silnej opini (-2 i 2). Sumarycznie około 15% głosów zmieniono na bardziej pozytywne, jednak w ponad 10% przypadków opinia zmieniła się na gorszą. Sugeruje to, że część osób odczuła pozytywne skutki szkoleń, jednak nadal pozostaje grupa osób, którym one nie pomogły, a nawet zaszkodziły.
+
 ### Zadanie 1.7
 
-```{r}
-#ankieta$CZY_ZADOW <- ifelse(ankieta$PYT_2 %in% c(-2, -1), "Nie zgadzam się",
-#                            ifelse(ankieta$PYT_2 %in% c(1, 2), "Zgadzam się", NA)
-#                            
-```
+Utwórz zmienną CZY_ZADOW na podstawie zmiennej PYT_2 łącząc kategorie "nie zgadzam się" i "zdecydowanie się nie zgadzam" oraz "zgadzam się" i "zdecydowanie się zgadzam".
 
 ```{r, echo = FALSE, warning = FALSE}
 ankieta <- ankieta %>% 
@@ -172,56 +229,86 @@ ankieta <- ankieta %>%
       PYT_2 %in% c(2, 1) ~ "Zadowolona",
       TRUE ~ NA_character_
     )) 
-view(ankieta)
+#view(ankieta)
 ```
 
 ### Zadanie 1.8
+
+Sporządź wykresy mozaikowe odpowiadające parom zmiennych: CZY_ZADOW i DZIAŁ, CZY_ZADOW i STAŻ, CZY_ZADOW i CZY_KIER, CZY_ZADOW i PŁEĆ oraz CZY_ZADOW i WIEK_KAT. Czy na podstawie uzyskanch wykresów można postawić pewne hipotezy dotyczące realicji między powyższymi zmiennymi? Spróbuj sformułować kilka takich hipotez.
 
 ```{r, dev="cairo_pdf", echo = FALSE, warning = FALSE}
 library(vcd)
 library(grid)
 MyColors = c('pink', 'lightblue', 'darkseagreen', 'orange')
-mosaicplot(table(ankieta$CZY_ZADOW, ankieta$DZIAŁ), color = MyColors, xlab = "zadowolenie", ylab = "dział", title = "porównanie" )
-
+mosaicplot(table(ankieta$CZY_ZADOW, ankieta$DZIAŁ), color = MyColors, xlab = "zadowolenie", ylab = "dział", main = "zadowolenie z podziałem na działy" )
+mosaicplot(table(ankieta$CZY_ZADOW, ankieta$STAŻ), color = MyColors, xlab = "zadowolenie", ylab = "staż", main = "zadowolenie z podziałem na staż" )
+mosaicplot(table(ankieta$CZY_ZADOW, ankieta$CZY_KIER), color = MyColors, xlab = "zadowolenie", ylab = "czy kierownik", main = "zadowolenie z podziałem na kierownictwo i resztę" )
+mosaicplot(table(ankieta$CZY_ZADOW, ankieta$PŁEĆ), color = MyColors, xlab = "zadowolenie", ylab = "płeć", main = "zadowolenie z podziałem na płeć" )
+mosaicplot(table(ankieta$CZY_ZADOW, ankieta$WIEK_KAT), color = MyColors, xlab = "zadowolenie", ylab = "wiek", main = "zadowolenie z podziałem na wiek" )
 ```
-## Część 2.
 
-## zadanie 2
+Badając odpowiedzi na **pytanie 2**, przy podziale pracowników na odpowiednie grupy możemy zauważyć:
+
+-   DZIAŁ: widzimy, że dla działu "PD" oraz "MK" więcej jest osób niezadowolonych, a w dziale "HR" więcej mamy osób zadowolonych. W dziale "IT" jest mniej więcej tyle samo zadowolonych i niezadowolonych osób. Widzimy zależność między badanymi zmiennymi.
+
+-   STAŻ: osoby o najmniejszym stażu są w większości niezadowolone, Dla grupy 1-3 widzimy zadowolenie większości, a w ostatniej grupie odpowiedzi rozkładają się po równo. Moglibyśmy przetestować jeszcze raz tę zależność dla bardziej szczegółowego podziału osób według długości stażu, teraz widzimy niezbyt silną korelację.
+
+-   CZY_KIER: przy tym podziale nie widać drastycznych nierówności. Osoby o stanowisku kierowniczym są delikatnie częściej zadowolone od pozostałych. Nie widać jednak silnej zależności między tymi zmiennymi.
+
+-   PŁEĆ: wiecej kobiet jest niezadowolonych, a w grupie mężczyzn delikatnie przeważają osoby zadowolone. Ponownie nie widać silnej zależności.
+
+-   WIEK_KAT: w grupach "36-40" oraz "\>55" przeważają odpowiedzi negatywne (niezadowolenie), a w pozostałych - pozytywne. Widzimy tutaj pewną nieliniową zależność.
+
+# Część 2.
+
+## Zadanie 2
+
+Zilustruj odpowiedzi na pytanie "Jak bardzo zgadzasz się ze stwierdzeniem, że firma pozwala na (...)?" (zmienna PYT_1) w całej badanej grupie oraz w podgrupach ze względu na zmienną CZY_KIER. W tym celu możesz zaproponować własne metody wizualizacji lub zapozać sić z bibliotekć `likert` i dostępnymi tam funkcjami `summary` oraz `plot` (jeśli korzystarz z R) oraz z bibliotek `Altair` lub `plot-likert` (jeśli korzystarz z Pythona).
 
 ```{r, echo = FALSE, warning = FALSE}
 PYT_1 <-  factor(PYT_1, levels = -2:2)
-class(PYT_1)
+#(PYT_1)
 ```
+
 ```{r, dev="cairo_pdf", echo = FALSE, warning = FALSE}
-ggplot(ankieta, aes(x= factor(PYT_1))) +
-  geom_bar(fill = 'darkseagreen') + 
-  labs(x = "PYT_1", y = "Liczba odp", title = 'słupkowy') +
-  theme_minimal()
+#ggplot(ankieta, aes(x= factor(PYT_1))) +
+#  geom_bar(fill = 'darkseagreen') + 
+#  labs(x = "PYT_1", y = "Liczba odp", title = 'słupkowy') +
+#  theme_minimal()
 ```
+
 ```{r, dev="cairo_pdf", echo = FALSE, warning = FALSE}
 library(likert)
 
 likert_df <- likert(as.data.frame(PYT_1))
 likert_df2 <- likert(as.data.frame(PYT_1), grouping = ankieta$CZY_KIER)
-likert_df2
+#likert_df2
 
 likert.bar.plot(likert_df)
 likert.bar.plot(likert_df2)
-summary(PYT_1)
+#summary(PYT_1)
 likert.density.plot(likert_df)
 #likert.density.plot(likert_df2)
 
 ```
-## Zadanie 3
-```{r}
-library(stats)
-#ankieta[sample(20),]
-ankieta[sample(1:nrow(ankieta), size = 0.1*nrow(ankieta), replace = FALSE),]
-ankieta[sample(1:nrow(ankieta), size = 0.1*nrow(ankieta), replace = TRUE),]
-```
-## zadanie 4
 
-```{r}
+Na pierwszym i ostatnim wykresie widzimy przewagę odpowiedzi "1" i "2", nad pozostałymi "-2", "-1" i "0". Jednak po podzieleniu grupy badanych ze względu na zmienną CZY_KIER widzimy większe niezodowolenie w grupie kierowników. Osoby bez stanowisk kierowniczych rzadziej udzielały negatywnych odpowiedzi i częściej głosowały na opcję "Zdecydowanie się zgadzam".
+
+## Zadanie 3
+
+Zapoznaj się z funkcją `sample` z biblioteki `stats` (w R) lub z funkcją `random.choice` z biblioteki numpy (w Pythonie). Przetestuj jej działanie dla różnych wartości argumentów wejściowych. Następnie wylosuj próbkę o liczności 10% wszystkich rekordów z pliku "ankieta.csv" w dwóch wersjach: ze zwracaniem oraz bez zwracania
+
+```{r, echo = TRUE, warning = FALSE}
+library(stats)
+bez_zwracania <- ankieta[sample(1:nrow(ankieta), size = 0.1*nrow(ankieta), replace = FALSE),]
+ze_zwracaniem <- ankieta[sample(1:nrow(ankieta), size = 0.1*nrow(ankieta), replace = TRUE),]
+```
+
+## Zadanie 4
+
+Zaproponuj metodę symulowania zmiennych losowych z rozkładu dwumianowego. Napisz funkcję do generowania realizacji, a następnie zaprezentuj jej działanie porównujęc wybrane teoretyczne i empiryczne charakterystyki dla przykładowych wartości paramertów rozkładu: n i p.
+
+```{r, echo = TRUE, warning = FALSE}
 symulacja <- function(N,n, p) {
   
   wyniki <- numeric(N)
@@ -236,6 +323,10 @@ symulacja <- function(N,n, p) {
 n <- 200
 p <- 0.2
 N <- 10000
+```
+
+```{r, echo = FALSE, warning = FALSE}
+
 
 samples_1 <- symulacja(N, n, p)
 wartość_oczekiwana_emp <- mean(samples_1)
@@ -252,50 +343,43 @@ cat("empiryczna wariancja: ", war_emp, "\n")
 
 
 ```
-## zadanie 5
 
-```{r}
+## Zadanie 5
+
+Zaproponuj metodę symulowania wektorów losowych z rozkładu wielomianowego. Napisz funkcję do generowania realizacji, a następnie zaprezentuj jej działanie porównujęc wybrane teoretyczne i empiryczne charakterystyki dla przykładowych wartości paramertów rozkładu: n i **p**.
+
+```{r, echo = TRUE, warning = FALSE}
+los_wiel <- function(ps, N){
+  k <- length(ps)
+  csum = cumsum(ps)
+  X <- rep(0, k) 
+  for (i in 1:N){
+    Z <- runif(1)
+    for (j in 1:k){
+      if (Z<csum[j]){
+      X[j] <- X[j] + 1
+      break } 
+    }
+  }
+  return(X/N)
+}
+```
+
+```{r, echo = FALSE, warning = FALSE}
 ps <-  c(0.1, 0.23, 0.47, 0.17, 0.03)
-k <- length(ps)
-sum(ps)
 N <- 10000
-csum = cumsum(ps)
-X <- rep(0, k) 
-for (i in 1:N){
-  Z <- runif(1)
-  for (j in 1:k){
-    if (Z<csum[j]){
-    X[j] <- X[j] + 1
-    break
-  }
-  }
-}
-X/N
+cat('Podany wektor prowdopodobieństwa:    ', ps)
+cat('\nEmpiryczny rozkład prawdopodobieństwa', los_wiel(ps, N))
 ```
-```{r}
-ps2 <-  rep(0.2, 5)
-k <- length(ps2)
-sum(ps)
-N <- 10000
-csum2 = cumsum(ps2)
-Y <- rep(0, k) 
-for (i in 1:N){
-  Z <- runif(1)
-  for (j in 1:k){
-    if (Z<csum2[j]){
-    Y[j] <- Y[j] + 1
-    break
-  }
-  }
-}
-Y/N
-```
+
 # Część 3.
 
 ## Zadanie 6.
 
-```{r}
-przedzial <- function(alpha, sukces, n = NULL){
+Napisz funkcję do wyznaczania realizacji przedziału ufności Cloppera-Pearsona. Niech argumentem wejściowym będzie poziom ufności, liczba sukcesów i liczba prób lub poziom ufności i wektor danych (funkcja powinna obsługiwać oba przypadki).
+
+```{r, warning = FALSE}
+clopper_pearson <- function(alpha, sukces, n = NULL){
   if(is.null(n)){
     data <-  sukces
     sukces <- sum(data == "1")
@@ -314,19 +398,21 @@ przedzial <- function(alpha, sukces, n = NULL){
   return(c(p_dol, p_gora))
 }
   
-przedzial(0.05, c(0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,1,0,1))
-  
 ```
+
 ## Zadanie 7
+
+Korzystając z funkcji napisanej w zadaniu 6. wyznacz realizacje przedziałów ufności dla prawdopodobieństwa, że pracownik uważa szkolenia za przystosowane do swoich potrzeb w pierwszym badanym okresie oraz w drugim badanym okresie. Skorzystaj ze zmiennych CZY_ZADW oraz CZY_ZADW_2 (utwórz zmienną analogicznie jak w zadaniu 1.7). Przyjmij 1− $\alpha$ = 0.95.
+
 ```{r, echo = FALSE, warning = FALSE}
-ankieta <- ankieta %>% 
+ankieta <- ankieta |>
   mutate(
     CZY_ZADOW2 = case_when(
       PYT_3 %in% c(-2, -1) ~ "Niezadowolona",
       PYT_3 %in% c(2, 1) ~ "Zadowolona",
       PYT_3 %in% c(0)  ~ "-",
     )) 
-przedzial_ <- function(alpha, sukces, n = NULL){
+przedzial <- function(alpha, sukces, n = NULL){
   if(is.null(n)){
     data <-  sukces
     sukces <- sum(data == "Zadowolona")
@@ -344,9 +430,111 @@ przedzial_ <- function(alpha, sukces, n = NULL){
   }
   return(c(p_dol, p_gora))
 }
-przedzial_(0.05, ankieta$CZY_ZADOW)
-przedzial_(0.05, ankieta$CZY_ZADOW2)
+cat("Przedział dla zmiennej 'CZY_ZADOW': ", przedzial(0.05, ankieta$CZY_ZADOW), "\n")
+cat("Przedział dla zmiennej 'CZY_ZADOW2':", przedzial(0.05, ankieta$CZY_ZADOW2), "\n")
 
 ```
+
 ## Zadanie 8
 
+Zapoznaj się z funkcjami do generowania zmiennych losowych z rozkładu dwumianowego oraz do wyznaczania przedziałów ufności dla parametru *p*. Przetestuj ich działanie.
+
+```{r, echo = FALSE, warning = FALSE, message=FALSE}
+library(stats)
+library(binom)
+rbinom(5, 1000, 0.37)
+binom.confint(x = c(2, 4), n = 10, conf.level = 0.95, methods='all')
+```
+
+## Zadanie 9
+
+```{r}
+library(binom)
+n_values <- c(30, 100, 1000)
+p_values <- seq(0.01, 0.99, by=0.01)
+N <- 50
+metody <- c('exact', 'asymptotic', 'wilson')
+```
+
+```{r}
+simulate_confidence_intervals <- function(metody, n, p_values, alpha = 0.05, N = 500){
+  coverage_results <- matrix(NA, nrow = length(metody), ncol = length(p_values))
+  length_results <- matrix(NA, nrow = length(metody), ncol = length(p_values))
+  
+  for (j in 1:length(p_values)) {
+    p <- p_values[j]
+    
+    coverage_ex <- numeric(N)
+    coverage_as <- numeric(N)
+    coverage_wilson <- numeric(N)
+    
+    length_ex <- numeric(N)
+    length_as <- numeric(N)
+    length_wilson <- numeric(N)
+    
+    for (t in 1:N) {
+      x <- rbinom(1, n, p)
+      
+      exact <- binom.confint(x, n, conf.level = 1 - alpha, method = "exact")
+      as <- binom.confint(x, n, conf.level = 1 - alpha, method = "asymptotic")
+      wilson <- binom.confint(x, n, conf.level = 1 - alpha, method = "wilson")
+      
+      coverage_ex[t] <- (p >= exact$lower && p <= exact$upper)
+      coverage_as[t] <- (p >= as$lower && p <= as$upper)
+      coverage_wilson[t] <- (p >= wilson$lower && p <= wilson$upper)
+      
+      length_ex[t] <- exact$upper - exact$lower
+      length_as[t] <- as$upper - as$lower
+      length_wilson[t] <- wilson$upper - wilson$lower
+    }
+    
+    coverage_results[1, j] <- mean(coverage_ex)
+    length_results[1, j] <- mean(length_ex)
+    coverage_results[2, j] <- mean(coverage_as)
+    length_results[2, j] <- mean(length_as)
+    coverage_results[3, j] <- mean(coverage_wilson)
+    length_results[3, j] <- mean(length_wilson)
+    
+    }
+  
+  list(coverage = coverage_results, length = length_results)
+}
+
+results30 <- simulate_confidence_intervals(metody, 30, p_values, N = N)
+results100 <- simulate_confidence_intervals(metody, 100, p_values, N = N)
+results1000 <- simulate_confidence_intervals(metody, 1000, p_values, N = N)
+```
+
+```{r}
+my_colors <- c('darkseagreen', 'lightblue', 'hotpink')
+plotowanie <- function(p_values, results, tit1, tit2){
+    plot(p_values, results[1,], type = "l", col = my_colors[1], lwd = 2,
+     xlab = 'p', ylab = tit2, , ylim = c(0, max(results)),
+     main = tit1)
+lines(p_values, results[2,], col = my_colors[2], lwd = 2)
+lines(p_values, results[3,], col = my_colors[3], lwd = 2)
+legend("bottomright", legend = c("ex", "as", "wilson"),
+       col = my_colors, lwd = 2)
+if (grepl("Prawdopodobieństwo pokrycia", tit1)) {
+abline(h = 0.95, col = "black", lwd = 2, lty = 2)
+}}
+
+
+```
+
+```{r}
+plotowanie(p_values, results30$coverage, "Prawdopodobieństwo pokrycia dla n = 30", "Prawdopodobieństwo pokrycia")
+plotowanie(p_values, results100$coverage, "Prawdopodobieństwo pokrycia dla n = 100", "Prawdopodobieństwo pokrycia")
+plotowanie(p_values, results1000$coverage, "Prawdopodobieństwo pokrycia dla n = 1000", "Prawdopodobieństwo pokrycia")
+
+```
+
+```         
+```
+
+```{r}
+tit2 = 'Długość przedziału'
+plotowanie(p_values, results30$length, "Długość przedziału dla n = 30", tit2)
+plotowanie(p_values, results100$length, "Długość przedziału dla n = 100", tit2)
+plotowanie(p_values, results1000$length, "Długość przedziału dla n = 1000", tit2)
+```
