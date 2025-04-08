@@ -150,7 +150,7 @@ ggplot(ankieta, aes(x= factor(PYT_1))) +
   theme_minimal()
 ```
 
-**Pytanie 1** brzmiało: "Jak bardzo zgadzasz się ze stwierdzeniem, ˙że
+**Pytanie 1** brzmiało: "Jak bardzo zgadzasz się ze stwierdzeniem, że
 firma zapewnia odpowiednie wsparcie i materiały umożliwiające skuteczne
 wykorzystanie w praktyce wiedzy zdobytej w trakcie szkoleń?" większość
 ankietowanych odpowiedziała 1 - "Zgadzam się" lub 2 - "Zdecydowanie się
@@ -186,7 +186,7 @@ którzy nie czują się odpowiednio wspierani przez firmę.
 ### Zadanie 1.5
 
 Sporządź tablice wielodzielcze dla par zmiennych: PYT_1 i DZIAŁ, PYT_1 i
-STAŻ, PYT_1 i CZY_KIER, PYT_1i PŁEĆ C oraz PYT_1 i WIEK_KAT. Sformułuj
+STAŻ, PYT_1 i CZY_KIER, PYT_1 i PŁEĆ oraz PYT_1 i WIEK_KAT. Sformułuj
 wnioski.
 
 ```{r, echo = FALSE, warning = FALSE}
@@ -198,41 +198,39 @@ table(PYT_1, WIEK_KAT)
 
 ```
 
-**Wnioski** (*to jeszcze jakoś ładniej ująć w słowa*)
+**Wnioski** 
 
-zadowolenie = zgadza się z stwierdzeniem
+-   Dział:
 
--   dział:
+    -   najwięcej osób niezgadzających się z podanym stwierdzeniem jest w dziale PD ale to
+        największy dział,
 
-    -   najwięcej niezadowolonych osób jest w dziale PD ale to
-        największy dział
+    -   IT wydaje się być w większości zadowolony z przeprowadzanych szkoleń.
 
-    -   IT wydaje się być w większości zadowolony
+-   Staż:
 
--   staż:
-
-    -   dla osób z niższym stażem około połowa osób jest zadowolona,
-        reszta nie ma zdania lub jest niezadowolona.
+    -   dla osób z niższym stażem około połowa osób zgadza się z podanym stwierdzeniem,
+        reszta nie ma zdania lub się nie zgadza.
 
     -   dla osob ze stażem miedzy 1 a 3 lata mamy bardzo dużą grupę osób
-        zadowolonych, jednak całkiem sporo osób zaznaczyło opcję "nie
+        zgadzających się z podanym stwierdzeniem, jednak całkiem sporo osób zaznaczyło opcję "nie
         mam zdania".
 
--   kierownictwo
+-   Kierownictwo
 
-    -   około 1/4 kierowników jest niezadowolona.
+    -   około 1/4 kierowników jest niezadowolona przeprowadzanych szkoleń.
 
     -   Dla nie-kierowników odpowiedzi rozkładają się bardziej w
-        kierunku pozytywnym
+        kierunku pozytywnym.
 
--   płeć:
+-   Płeć:
 
-    -   kobiety są bardziej zadowolone (procentowo)
+    -   kobiety są bardziej zadowolone (procentowo) z wsparcia i możliwości oferowanych przez szkolenia.
 
--   wiek:
+-   Wiek:
 
     -   największy odsetek niezadowolonych osób jest wśród najmłodszych
-        pracowników a najmniejszy w grupie 46-55 lat
+        pracowników a najmniejszy w grupie 46-55 lat.
 
 ### Zadanie 1.6
 
@@ -282,7 +280,7 @@ library(grid)
 MyColors = c('pink', 'lightblue', 'darkseagreen', 'orange')
 mosaicplot(table(ankieta$CZY_ZADOW, ankieta$DZIAŁ), color = MyColors, xlab = "zadowolenie", ylab = "dział", main = "zadowolenie z podziałem na działy" )
 mosaicplot(table(ankieta$CZY_ZADOW, ankieta$STAŻ), color = MyColors, xlab = "zadowolenie", ylab = "staż", main = "zadowolenie z podziałem na staż" )
-mosaicplot(table(ankieta$CZY_ZADOW, ankieta$CZY_KIER), color = MyColors, xlab = "zadowolenie", ylab = "czy kierownik", main = "zadowolenie z podziałem na kierownictwo i resztę" )
+mosaicplot(table(ankieta$CZY_ZADOW, ankieta$CZY_KIER), color = MyColors, xlab = "zadowolenie", ylab = "czy kierownik", main = "zadowolenie z podziałem na kierownictwo" )
 mosaicplot(table(ankieta$CZY_ZADOW, ankieta$PŁEĆ), color = MyColors, xlab = "zadowolenie", ylab = "płeć", main = "zadowolenie z podziałem na płeć" )
 mosaicplot(table(ankieta$CZY_ZADOW, ankieta$WIEK_KAT), color = MyColors, xlab = "zadowolenie", ylab = "wiek", main = "zadowolenie z podziałem na wiek" )
 ```
@@ -321,8 +319,8 @@ odpowiednie grupy możemy zauważyć:
 Zilustruj odpowiedzi na pytanie "Jak bardzo zgadzasz się ze
 stwierdzeniem, że firma pozwala na (...)?" (zmienna PYT_1) w całej
 badanej grupie oraz w podgrupach ze względu na zmienną CZY_KIER. W tym
-celu możesz zaproponować własne metody wizualizacji lub zapozać sić z
-bibliotekć `likert` i dostępnymi tam funkcjami `summary` oraz `plot`
+celu możesz zaproponować własne metody wizualizacji lub zapoznać się z
+biblioteką `likert` i dostępnymi tam funkcjami `summary` oraz `plot`
 (jeśli korzystarz z R) oraz z bibliotek `Altair` lub `plot-likert`
 (jeśli korzystarz z Pythona).
 
@@ -529,11 +527,38 @@ Przetestuj ich działanie.
 ```{r, echo = FALSE, warning = FALSE, message=FALSE}
 library(stats)
 library(binom)
-rbinom(5, 1000, 0.37)
-binom.confint(x = c(2, 4), n = 10, conf.level = 0.95, methods='all')
 ```
+```{r}
+rbinom(5, 1000, 0.37) # funkcja z biblioteki stats
+binom.confint(x = 2, n = 10, conf.level = 0.95, methods='exact')
+```
+W przypadku pierwszej funkcji podajemy parametry:
+
+- n: liczbę obserwacji
+- size: liczbę prób
+- prob: prawdopodobieństwo sukcesu ($p$).
+
+Funkcja zwraca ektor długości n, zawierający wygenerowane liczby sukcesów (od 0 do size), z rozkładu dwumianowego.
+
+W przypadku funkcji `binom.confint`, parametry to: 
+
+- x: liczba sukcesów (może być wektor),
+- n: liczba prób (czyli rozmiar próby),
+- conf.level: poziom ufności (np. 0.95),
+- methods: metoda wyznaczania przedziału ufności, np. "exact", "ac", "asymptotic", "wilson", "prop.test", "bayes", "logit", "cloglog", "probit". Wbudowana opcja to "all".
+
+Jako wynik otrzymujemy `data.frame` z kolumnami:
+
+- method: nazwa metody,
+- x: liczba sukcesów,
+- n: liczba prób,
+- mean: oszacowanie częstości (x/n),
+- lower i upper: dolna i górna granica przedziału ufności.
 
 ## Zadanie 9
+Przeprowadź symulacje, których celem jest porównanie prawdopodobieństwa pokrycia i długości przedziałów ufności Cloppera-Pearsona, Walda i trzeciego dowolnego
+ typu zaimplementowanego w wybranej funkcji. Rozważ 1− $\alpha$ = 0.95, rozmiar próby n $\in$
+ {30,100,1000} i różne wartości prawdopodobieństwa p. Wyniki umieść na wykresach i sformułuj wnioski, które dla konkretnych danych ułatwią wybór konkretnego typu przedziału ufności.
 
 ```{r, echo = FALSE, warning = FALSE}
 library(binom)
@@ -622,12 +647,18 @@ plotowanie(p_values, results30$length, "Długość przedziału dla n = 30", tit2
 plotowanie(p_values, results100$length, "Długość przedziału dla n = 100", tit2)
 plotowanie(p_values, results1000$length, "Długość przedziału dla n = 1000", tit2)
 ```
+Metoda Walda ("asymptotic") wykazuje najmniejsze prawdopodobieństwo pokrycia, które spada dużo poniżej 0.95 dla małych próbek i p bliskim zera lub jeden. Dla próbki 100 zachowuje sie lepiej, ale nadal prawdopodobieństwo pokrycia dla p bliskiego 0 i 1 mocno spada. Najlepsza w tym porównaniu wypada metoda C-P ("exact") która dla dwóch mniejszych próbek daje najwyższe prawdopodobieństwo pokrycia. Dla największej próbki, n=1000 wszystkie metody radzą sobie na podobnym poziomie. 
+
+Patrząc na długości przedziałów metoda C-P wypada najgorzej - dla każdego z badanych n  przedziały wychodzą najdłuższe. Metoda Walda daje nam krótsze przedziały, jednak dzieje się to kosztem pokrycia - najkrótsze przedziały pojawiają się tam gdzie prawdopodobieństwo jest najniższe. Dobrym kompromisem między pokryciem a długością przedziału okazuje się metoda Wilsona - daje nam najkrótsze przedziały przy przyzwoitym prawdopodobieństwie pokrycia.
 
 # Część 5
 
 ## Zadanie 10
+Zapoznaj się z funkcjami służącymi do wykonania testu dokładnego oraz asympotycznego weryfikującego hipotezę zerową dotyczącą prawodopodobieństwa sukcesu
+ z rozkładu dwumianowego. W pakiecie R możesz skorzystać z `binom.test` oraz `prop.test`
+ z biblioteki `stats`, nastomiast w Pythonie użyj `stats.binomtest` z biblioteki `scipy` oraz
+ `stats.proportion.proportions_ztest` z biblioteki `statsmodels`. Przetestuj działanie funkcji.
 
-Jakich funkcji używamy oraz przykładowe użycie:
 
 ```{r}
 #TEST DOKŁADNY
@@ -663,9 +694,12 @@ asymptotyczny stosuje przybliżenie normalne.
 
 ## Zadanie 11
 
-Dla danych z pliku "ankieta.csv" korzystaj ˛ ac z funkcji z zadania 10.,
-przyjmując 1−α =0.95, zweryfikuj następujące hipotezy i sformułuj
-wnioski \### 1. Prawdopodobieństwo, że w firmie pracuje kobieta wynosi
+Dla danych z pliku "ankieta.csv" korzystając z funkcji z zadania 10.,
+przyjmując 1− $\alpha$ =0.95, zweryfikuj następujące hipotezy i sformułuj
+wnioski 
+
+### Zadanie 11.1 
+Prawdopodobieństwo, że w firmie pracuje kobieta wynosi
 0.5
 
 ```{r, warning = FALSE, echo = FALSE}
@@ -676,7 +710,7 @@ alt <- 'two.sided'
 binom.test(x,n,p=0.5, alternative = alt, conf.level = 0.95)
 ```
 
-P-valie mniejsze niż $\alpha$ czyli odrzucamy hipotezę zerową na rzecz
+P-wartość mniejsze niż $\alpha$, czyli odrzucamy hipotezę zerową na rzecz
 hipotezy alternatywnej.
 
 ### Zadanie 11.2
@@ -736,8 +770,8 @@ hipotezy zerowej.
 W tym zadaniu naszym celem było wyznaczenie mocy testu dla dwóch różnych
 testów statystycznych: testu dokładnego (testu dwumianowego) oraz testu
 asymptotycznego (testu proporcji). Zadanie polegało na przeprowadzeniu
-symulacji, w której weryfikowaliśmy hipotezę zerową przeciwko hipotezie
-alternatywnej. Wyniki symulacji zostały przedstawione w postaci wykresów
+symulacji, w której weryfikowaliśmy hipotezę zerową ($H_0: p = 0.9$) przeciwko hipotezie
+alternatywnej ($H_1: p \neq 0.9$). Wyniki symulacji zostały przedstawione w postaci wykresów
 przedstawiających moc testu dla każdego rozmiaru próby oraz każdego
 testu.
 
@@ -803,8 +837,9 @@ plotly(wyniki1000, 1000)
 wartości p bliskich 0.9, co wynika z dużej niepewności przy małej
 liczbie obserwacji. Test dokładny wykazuje szybszy spadek mocy w miarę
 oddalania się p od 0.9, test asymptotyczny w tym przypadku wykazuje
-mniejszy spadek mocy, co sprawia, że jest bardziej stabilny, - Moc
-testów rośnie w miarę zwiększania rozmiaru próby,
+mniejszy spadek mocy, co sprawia, że jest bardziej stabilny.
+
+\- Moc testów rośnie w miarę zwiększania rozmiaru próby.
 
 \- W przypadku dużych prób oba testy wykazują bardzo wysoką moc,
 szczególnie dla wartości p znacznie różniących się od 0.9,
