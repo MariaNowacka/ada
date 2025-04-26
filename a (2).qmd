@@ -1,0 +1,355 @@
+---
+format:
+  pdf:
+    number-sections: true
+toc: true
+lang: pl
+execute:
+  echo: true
+  warning: false
+  message: false
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+# Wstęp
+
+Celem niniejszego sprawozdania jest przeprowadzenie analizy danych
+ankietowych dotyczących oceny szkoleń przeprowadzonych w firmie, a także
+badania zależności pomiędzy różnymi zmiennymi demograficznymi a opiniami
+pracowników. W ramach prac wykonamy szereg zadań obejmujących:
+
+\- wyznaczanie przedziałów ufności dla prawdopodobieństw opisujących
+poziom zadowolenia ze szkolenia,
+
+\- konstruowanie funkcji do wyznaczania poziomów krytycznych dla różnych
+testów statystycznych,
+
+\- weryfikację hipotez dotyczących rozkładów odpowiedzi oraz
+niezależności zmiennych za pomocą testów chi-kwadrat, Fishera oraz
+Freemana-Haltona,
+
+\- analizę wyników testów i ich graficzną interpretację przy użyciu
+wykresów asocjacyjnych,
+
+\- przeprowadzenie symulacji w celu oceny mocy testów statystycznych,
+
+\- ocenę zależności pomiędzy zmiennymi przy użyciu miar takich jak
+ryzyko względne, iloraz szans, współczynniki korelacji dla zmiennych
+porządkowych oraz analiza korespondencji.
+
+Dla przejrzystości i uporządkowania analiz, raport został podzielony na
+pięć części, z których każda odpowiada kolejnym zagadnieniom badawczym.
+Sprawozdanie ma na celu rozwinięcie praktycznych umiejętności w zakresie
+stosowania metod statystycznych w analizie danych ankietowych oraz
+interpretacji uzyskanych wyników w kontekście problemów rzeczywistych.
+
+# Część I
+
+W pierwszej części sprawozdania skupimy się na analizie danych
+dotyczących opinii pracowników na temat skuteczności szkolenia
+"Efektywna komunikacja w zespole". Na podstawie odpowiedzi wyznaczymy
+przedziały ufności dla wektora prawdopodobieństw opisującego stopień
+zadowolenia ze szkolenia. Następnie przygotujemy funkcje umożliwiające
+wyznaczanie poziomów krytycznych w testach chi-kwadrat Pearsona i
+największej wiarygodności, a także wykorzystamy je do weryfikacji
+hipotezy o równomierności rozkładu odpowiedzi na pytanie dotyczące
+wsparcia i materiałów szkoleniowych w Dziale Produktowym. W analizie
+przyjmiemy poziomy istotności wskazane w treści zadań.
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(readr)
+library(dplyr)
+ankieta <- read.csv("ankieta.csv", sep=";", fileEncoding = "Latin2")
+```
+
+## Zadanie 1
+
+W ankiecie przedstawionej na poprzedniej liście pracownicy zostali
+poproszeni o wyrażenie opinii na temat skuteczności szkolenia "Efektywna
+komunikacja w zespole" zorganizowanego przez firmę. Wśród próbki 200
+pracowników (losowanie proste ze zwracaniem) uzyskano wyniki:
+
+• 14 pracowników- bardzo niezadowolonych,  
+
+• 17 pracowników- niezadowolonych,  
+
+• 40 pracowników- nie ma zdania,  
+
+• 100 pracowników- zadowolonych,  
+
+• 29 pracowników- bardzo zadowolonych,
+
+Na podstawie danych wyznacz przedział ufności dla wektora prawodobieństw
+opisującego stopieN zadowolenia ze szkolenia. Przyjmij poziom ufności
+**0.95**.
+
+**Rozwiązanie**
+
+```{r, echo = FALSE, warning = FALSE}
+library(binom)
+
+opinie <- c(14, 17, 40, 100, 29)  
+n <- sum(opinie)  
+alpha <- 0.01
+
+metody <- c("exact", "wilson", "asymptotic")
+
+oblicz_przedzialy <- function(opinie, n, metoda) {
+  sapply(opinie, function(x) {
+    przedzial <- binom.confint(x, n, conf.level = 0.99, methods = metoda)
+    return(c(przedzial$lower, przedzial$upper))
+  })
+}
+
+CI_clopper <- oblicz_przedzialy(opinie, n, "exact")
+CI_wilson  <- oblicz_przedzialy(opinie, n, "wilson")
+CI_wald    <- oblicz_przedzialy(opinie, n, "asymptotic")
+
+
+CI_all <- list(
+  Clopper_Pearson = t(CI_clopper),
+  Wilson = t(CI_wilson),
+  Wald = t(CI_wald)
+)
+
+CI_all
+```
+
+W zadaniu wyznaczyłyśmy przedziały ufności dla prawdopodobieństw
+opisujących stopień zadowolenia pracowników z przeprowadzonego
+szkolenia. Aby to osiągnąć:
+
+• wykorzystałyśmy funkcję ***binom.confint()***,
+
+• obliczenia przeprowadziłyśmy dla trzech różnych metod: Clopper-Pearson
+(dokładna metoda), Wilson oraz Wald (asymptotyczna metoda),
+
+• dla każdej kategorii odpowiedzi obliczyłyśnmy osobno dolną i górną
+granicę przedziału ufności,
+
+• wyniki przedstawione są w formie tabelarycznej oddzielnie dla każdej z
+metod.
+
+**Opis wyników**
+
+• Metoda Clopper-Pearson daje nam najszersze przedziały ufności, co
+wynika z jej charakteru — zapewnia większe bezpieczeństwo przy niskiej
+liczbie sukcesów lub porażek,
+
+• Metoda Wilsona daje lekko węższe przedziały niż Clopper-Pearson, ale
+nadal zachowuje dobrą dokładność,
+
+• Metoda Walda generuje najwęższe przedziały, ale ich dokładność dla
+małych lub skrajnych wartości może być niska.
+
+**Wnioski**
+
+Wyniki różnią się w zależności od wybranej metody. Metoda
+Clopper-Pearson jest najbardziej ostrożna (dłuższe przedziały), metoda
+Wilsona pozwala uzyskać przedziały węższe, przy zachowaniu wysokiej
+dokładności, natomiast metoda Walda daje najwęższe przedziały, ale ich
+wiarygodność może być ograniczona, zwłaszcza przy małych licznościach. W
+praktyce, dla wysokiej pewności wyników, zaleca się stosowanie metody
+Clopper-Pearson lub Wilsona.
+
+## Zadanie 2
+
+Napisz funkcję, która wyznacza wartość poziomu krytycznego w
+następujących testach:
+
+• chi-kwadrat Pearsona,
+
+• chi-kwadrat największej wiarogodności,
+
+służących do weryfikacji hipotezy $H_0$
+
+```{r, echo=FALSE, warning=FALSE}
+test <- function(x, n, p0, alpha = 0.05) {
+  statystyka1 <- sum((x - n * p0)^2 / (n * p0))
+  p_val <- 1 - pchisq(statystyka1, length(p0)-1)
+  
+  statystyka2 <- 2 * sum(x * log(x / (n * p0)))
+  p_val2 <- 1 - pchisq(statystyka2, length(p0)-1)
+
+  return(c(p_val, p_val2))
+}
+
+
+x <- c(20, 30, 40, 50) 
+n <- sum(x) 
+p0 <- c(0.2, 0.2, 0.2, 0.2)  
+
+
+test(x, n, p0, alpha)
+
+```
+
+## Zadanie 3
+
+```{r}
+
+```
+
+# Część II
+
+W drugiej części raportu zajmiemy się badaniem zależności pomiędzy
+wybranymi zmiennymi ankietowymi. W szczególności zweryfikujemy hipotezy
+o niezależności zmiennych takich jak płeć, wiek, staż pracy i zajmowane
+stanowisko. W analizach wykorzystamy test Fishera oraz test
+Freemana-Haltona, odpowiednie do badania zależności w tabelach
+kontyngencji.
+
+## Zadanie 4
+Zapoznaj się z funkcjami służącymi do wykonania testu Fishera oraz testu
+ Freemana-Haltona.
+```{r}
+fisher.test(x, y = NULL, workspace = 200000, hybrid = FALSE,
+            hybridPars = c(expect = 5, percent = 80, Emin = 1),
+            control = list(), or = 1, alternative = "two.sided",
+            conf.int = TRUE, conf.level = 0.95,
+            simulate.p.value = FALSE, B = 2000)
+```
+Funkcja przyjmuje wiele argumentów, niektóre tylko w przypadku macierzy $ 2 \times 2$. W formie w której zostało wyświetlone, najważniejsze parametry których będziemy używać to:
+
+- `x` tabela dwurymiarowa w formie tabeli lub `factor`
+- `y` obiekt `factor`, ignorowane jeśli `x` jest macierzą
+- ...
+
+Przykładowe użycie funkcji - czy odpowiedzi na 2 pytania typu Tak/Nie są zależne?
+```{r}
+# test fishera
+odpowiedzi <-
+matrix(c(13, 11, 5, 31),
+       nrow = 2,
+       dimnames = list(PYT1 = c("Tak", "Nie"),
+                       PYT2 = c("Tak", "Nie")))
+fisher.test(odpowiedzi)$p.value
+```
+P-value mniejsze od poziomu istotności, więc odrzucamu hipotezę $H_0$ o niezależności zmiennych.
+Wykonajmy również test dla tabeli o większych wymiarach, np. $2 \times 3$
+```{r}
+# test freemana-haltona
+odpowiedzi2 <- matrix(c(5, 10, 8, 5, 7, 8), nrow = 2, byrow = TRUE, dimnames = list(PYT1 = c("Tak", "Nie"),
+                       PYT2 = c("A", "B", "C")))
+fisher.test(odpowiedzi2, simulate.p.value = TRUE, B = 100000)
+```
+P-value jest większe od poziomu istotności (przyjmujemy $\alpha = 0.05$), więc nie mamy podstaw aby odrzucić hipotezę $H_0$ o niezależności zmiennych.
+
+## Zadanie 5
+ Korzystajac z testu Fishera, na poziomie istotnosci 0.05, zweryfikuj hipotezę, że
+ zmienna PŁEĆ i zmienna CZY_KIER są niezależne. Czy na poziomie istotności 0.05 możemy
+ wnioskować, że prawdopodobieństwo tego, że na stanowisku kierowniczym pracuje kobieta
+ jest równe prawdopodobieństwu tego, że na stanowisku kierowniczym pracuje mężczyzna?
+ Uzasadnij odpowiedź.
+```{r}
+kkier <- sum(ankieta$PŁEĆ == 'K' & ankieta$CZY_KIER == 'Tak')
+k <- sum(ankieta$PŁEĆ == 'K')
+mkier <- sum(ankieta$PŁEĆ == 'M' & ankieta$CZY_KIER == 'Tak')
+m <- sum(ankieta$PŁEĆ == 'M')
+x <- matrix(c(kkier,mkier,k-kkier,m-mkier), nrow =2, byrow = TRUE, dimnames = list(CZY_KIER = c("Tak", "Nie"), PŁEĆ = c("K", "M")))
+fisher.test(x, alternative="two.sided")$p.value
+```
+Naszą hipotezą $H_0$ jest niezależność zmiennych. P-value jest wyższa od przyjętego poziomu ufności ($\alpha = 0.05$), więc nie ma podstaw do odrzucenia tej hipotezy. W naszym zadaniu oznacza to, że funkcja kierownicza nie jest związana z płcią, a więc kobiety i mężczyżni mają równe prawdopobieństwo pracowania na stanowisku kierowniczym.
+
+## Zadanie 6
+
+```{r}
+
+```
+
+# Część III
+
+## Zadanie 7 i 8
+
+```{r}
+dane <- matrix(c(20, 30, 25, 25), nrow = 2, byrow = TRUE)
+colnames(dane) <- c("TAK", "NIE")
+rownames(dane) <- c("TAK", "NIE")
+dane
+
+test <- chisq.test(dane)
+print(test)
+```
+
+P-value wyszło większe niż 0.05, więc nie mamy podstaw do odrzucenia
+hipotezy zerowej. Zmienne są niezależne.
+
+```{r}
+library(graphics)
+tabela <- table(ankieta$PYT_2, ankieta$CZY_KIER)
+test <- chisq.test(tabela)
+print(test)
+
+assocplot(tabela)
+
+```
+
+Czerwony słupek to reszta istotna. Czarny to reszta mało istotna.
+
+```{r}
+```
+
+## Zadanie 9
+ Zapoznaj sie z funkcja słuzaca do generowania realizacji wektorów losowych
+ z rozkładu wielomianowego, a nastepnie korzystajac z niej przeprowadz symulacje w celu
+ oszacowania mocy testu Fishera oraz mocy testu chi-kwadrat Pearsona, generujac dane z tabeli 2×2, w której p11 = 1/40, p12 = 3/40, p21 = 19/40, p22 = 17/40. Symulacje wykonaj dla n =50, n=100 oraz n=1000. Sformułuj wnioski
+ 
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+library(stats)
+n <- c(50,100,1000)
+#p <- matrix(c(1/40, 3/40, 19/40, 17/40), nrow=2, byrow=TRUE)
+p <- c(1/40, 3/40, 19/40, 17/40)
+moc_testu <- function(n, p, N = 500, alpha = 0.05){
+  chi <- 0
+  fisher <- 0
+  for(i in 1:N){
+    X <- rmultinom(1, size = n, prob = p)
+    if (sum(X) == 0){
+      X <- rmultinom(1, size = n, prob = p)
+    }
+    mat <- matrix(X, nrow = 2, byrow = TRUE)
+
+    chi_test <- chisq.test(mat, correct = FALSE)
+    if (chi_test$p.value < 0.05) chi <- chi + 1
+
+    if (all(mat > 0)) {
+      fisher_test <- fisher.test(mat)
+      if (fisher_test$p.value < 0.05) fisher <- fisher + 1
+    }
+  }
+  return(c(pearson = chi / N, fisher = fisher / N))
+}
+
+results <- sapply(n, function(ni) moc_testu(ni, p))
+colnames(results) <- paste0("n=", n)
+results
+
+```
+**Wnioski**
+Dla większych $n$ moc testu jest większa.
+
+## Zadanie 10
+Napisz funkcje, która dla danych z tablicy dwudzielczej oblicza wartosc poziomu
+ krytycznego w tescie niezaleznosci opartym na ilorazie wiarogodnosci. Korzystajac z napisanej
+ funkcji, wykonaj test dla danych przeanalizowanych w zadaniu 8.
+ 
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+tabela <- table(ankieta$PYT_2, ankieta$CZY_KIER)
+n_j <- colSums(tabela)
+n_i <- rowSums(tabela)
+n <- sum(n_i)
+lambda <- 1
+for (i in 1:nrow(tabela)) {
+  for (j in 1:ncol(tabela)) {
+    frac <- (n_i[i] * n_j[j])/ (tabela[i,j] * n)
+    lambda <- lambda * frac^tabela[i, j]
+  }
+  
+}
+G_2 <- -2*log(lambda)
+p <- 1 - pchisq(G_2, (nrow(tabela)-1)*(ncol(tabela)-1) )
+p
+```
