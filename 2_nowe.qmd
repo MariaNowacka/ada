@@ -444,11 +444,43 @@ row_stdy <- F[,2]
 col_stdx <- G[,1]
 col_stdy <- G[,2]
 
-# Wykres analizy korespondencji
-plot(row_stdx, row_stdy, col = "blue", pch = 16, xlab = "Współrzędna X", ylab = "Współrzędna Y", main = "Analiza korespondencji - Wiersze",  ylim = c(-4, 2), xlim=c(-1,9))
+plot(row_stdx, row_stdy, col = "blue", pch = 16, xlab = "Współrzędna X", ylab = "Współrzędna Y", main = "Analiza korespondencji - Wiersze",  ylim = c(-4, 2.5), xlim=c(-1,9))
 points(col_stdx, col_stdy, col = "red", pch = 16)
 legend("topright", legend = c("Wiersze", "Kolumny"), col = c("blue", "red"), pch = 16)
+abline(h = 0, col = "black", lty = 2)
+abline(v = 0, col = "black", lty = 2)
+text(row_stdx, row_stdy, labels = as.character(c(-2,-1,1,2)), pos = 3, col = "blue")  # Odpowiedzi wierszy
+text(col_stdx, col_stdy, labels = as.character(c(1,2,3)), pos = 3, col = "red")  # Odpowiedzi kolumn
 
 
+```
+
+```{r, echo = FALSE, warning = FALSE}
+library(ca)
+
+analiza_korespondencji <- function(tablica) {
+  # Analiza korespondencji
+  wynik <- ca(tablica)
+  
+  # Wydruk wyników
+  cat("Wartości własne:\n")
+  print(wynik$sv^2)
+  
+  cat("\nUdział wyjaśnionej wariancji:\n")
+  print(wynik$eig / sum(wynik$eig))
+  
+  cat("\nWspółrzędne wierszy:\n")
+  print(wynik$rowcoord)
+  
+  cat("\nWspółrzędne kolumn:\n")
+  print(wynik$colcoord)
+  
+  # Wykres
+  plot(wynik, main = "Analiza korespondencji", col.row = "blue", col.col = "red")
+  
+  # Zwrócenie pełnego obiektu
+  invisible(wynik)
+}
+analiza_korespondencji(tabela)
 ```
 
