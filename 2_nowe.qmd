@@ -166,7 +166,7 @@ następujących testach:
 
 służących do weryfikacji hipotezy $H_0$
 
-```{r, echo=FALSE, warning=FALSE}
+```{r, warning=FALSE}
 test <- function(x, n, p0, alpha = 0.05) {
   statystyka1 <- sum((x - n * p0)^2 / (n * p0))
   p_val <- 1 - pchisq(statystyka1, length(p0)-1)
@@ -188,7 +188,14 @@ test(x, n, p0, alpha)
 ```
 
 ## Zadanie 3
-
+ Na podstawie danych z ankiety z poprzedniej listy zweryfikuj hipotezę, że w grupie
+ pracowników zatrudnionwych w Dziale Produktowym rozkład odpowiedzi na pytanie "Jak
+ bardzo zgadzasz się ze stwierdzeniem, że firma zapewnia odpowiednie wsparcie i materiały
+ umożliwiające skuteczne wykorzystanie w praktyce wiedzy zdobytej w trakcie szkoleń?" jest
+ równomierny, tzn. jest jednakowe prawdopodobieństwo, że pracownik zatrudniony w Dziale
+ Produkcjnym udzielił odpowiedzi "zdecydowanie się nie zgadzam", "nie zgadzam się", "nie
+ mam zdania", "zgadzamsię", "zdecydowanie się zgadzam" na pytanie PYT_1. Przyjmij poziom
+ istotności 0.05. Skorzystaj z funkcji napisanej w zadaniu 2
 ```{r}
 
 ```
@@ -212,11 +219,11 @@ Zapoznaj się z funkcjami służącymi do wykonania testu Fishera oraz testu
 #            conf.int = TRUE, conf.level = 0.95,
 #            simulate.p.value = FALSE, B = 2000)
 ```
-Funkcja przyjmuje wiele argumentów, niektóre tylko w przypadku macierzy $ 2 \times 2$. W formie w której zostało wyświetlone, najważniejsze parametry których będziemy używać to:
+Funkcja przyjmuje wiele argumentów, niektóre tylko w przypadku macierzy $ 2 \times 2$. W formie w której zostało wyświetlone, najważniejsze parametry to:
 
-- `x` tabela dwurymiarowa w formie tabeli lub `factor`
-- `y` obiekt `factor`, ignorowane jeśli `x` jest macierzą
-- ...
+- `x` tabela dwurymiarowa w formie macierzy lub typu `factor`
+- `alternative` określa hipotezę alernatywną ($H_1$)
+- `simulate.p.value` - wartość określająca sposób obliczania p-wartości w tablicach większych niż $ 2 \times 2$
 
 Przykładowe użycie funkcji - czy odpowiedzi na 2 pytania typu Tak/Nie są zależne?
 ```{r}
@@ -228,7 +235,7 @@ matrix(c(13, 11, 5, 31),
                        PYT2 = c("Tak", "Nie")))
 fisher.test(odpowiedzi)$p.value
 ```
-P-value mniejsze od poziomu istotności, więc odrzucamu hipotezę $H_0$ o niezależności zmiennych.
+P-value mniejsze od poziomu istotności, więc odrzucamy hipotezę $H_0$ o niezależności zmiennych.
 Wykonajmy również test dla tabeli o większych wymiarach, np. $2 \times 3$
 ```{r}
 # test freemana-haltona
@@ -244,7 +251,7 @@ P-value jest większe od poziomu istotności (przyjmujemy $\alpha = 0.05$), wię
  wnioskować, że prawdopodobieństwo tego, że na stanowisku kierowniczym pracuje kobieta
  jest równe prawdopodobieństwu tego, że na stanowisku kierowniczym pracuje mężczyzna?
  Uzasadnij odpowiedź.
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 kkier <- sum(ankieta$PŁEĆ == 'K' & ankieta$CZY_KIER == 'Tak')
 k <- sum(ankieta$PŁEĆ == 'K')
 mkier <- sum(ankieta$PŁEĆ == 'M' & ankieta$CZY_KIER == 'Tak')
@@ -252,7 +259,7 @@ m <- sum(ankieta$PŁEĆ == 'M')
 x <- matrix(c(kkier,mkier,k-kkier,m-mkier), nrow =2, byrow = TRUE, dimnames = list(CZY_KIER = c("Tak", "Nie"), PŁEĆ = c("K", "M")))
 fisher.test(x, alternative="two.sided")$p.value
 ```
-Naszą hipotezą $H_0$ jest niezależność zmiennych. P-value jest wyższa od przyjętego poziomu ufności ($\alpha = 0.05$), więc nie ma podstaw do odrzucenia tej hipotezy. W naszym zadaniu oznacza to, że funkcja kierownicza nie jest związana z płcią, a więc kobiety i mężczyżni mają równe prawdopobieństwo pracowania na stanowisku kierowniczym.
+Naszą hipotezą $H_0$ jest niezależność zmiennych. W naszym zadaniu zmienne, których niezależność testujemy to PŁEĆ oraz CZY_KIER.  P-value jest wyższa od przyjętego poziomu ufności ($\alpha = 0.05$), więc nie ma podstaw do odrzucenia naszej hipotezy zerowej. W statystyce jednak nie mówimy, że "prawdopodobieństwo tego, że na stanowisku kierowniczym pracuje kobieta jest równe prawdopodobieństwu tego, że na stanowisku kierowniczym pracuje mężczyzna", a zamiast tego mówimy, że nie ma podstaw do odrzucenia tej hipotezy.
 
 ## Zadanie 6
 
@@ -263,6 +270,11 @@ Naszą hipotezą $H_0$ jest niezależność zmiennych. P-value jest wyższa od p
 # Część III
 
 ## Zadanie 7 i 8
+Zapoznaj się z funkcją służącą do wykonania testu niezależności chi-kwadrat i zweryfikuj hipotezę, że stopień zadowolenia ze szkoleń w kontekście dopasowania do indywidualnych potrzeb w pierwszym
+ badanym okresie nie zależy od zajmowanego stanowiska. Przyjmij poziom istotności 0.01.
+ Wynik testu porównaj z wynikiem uzyskanym w zadaniu 6. Zaprezentuj reszty wyznaczane w
+ teście na wykresie asocjacyjnym i dokonaj jego interpretacji.
+
 
 ```{r}
 dane <- matrix(c(20, 30, 25, 25), nrow = 2, byrow = TRUE)
@@ -274,10 +286,10 @@ test <- chisq.test(dane)
 print(test)
 ```
 
-P-value wyszło większe niż 0.05, więc nie mamy podstaw do odrzucenia
+P-value wyszło większe niż 0.01, więc nie mamy podstaw do odrzucenia
 hipotezy zerowej. Zmienne są niezależne.
 
-```{r}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(graphics)
 tabela <- table(ankieta$PYT_2, ankieta$CZY_KIER)
 test <- chisq.test(tabela)
@@ -329,7 +341,7 @@ results
 
 ```
 **Wnioski**
-Dla większych $n$ moc testu jest większa.
+Dla większych $n$ moc testu drastycznie rośnie.
 
 
 ## Zadanie 10
@@ -337,22 +349,25 @@ Napisz funkcje, która dla danych z tablicy dwudzielczej oblicza wartosc poziomu
  krytycznego w tescie niezaleznosci opartym na ilorazie wiarogodnosci. Korzystajac z napisanej
  funkcji, wykonaj test dla danych przeanalizowanych w zadaniu 8.
  
-```{r, echo = FALSE, warning = FALSE, message = FALSE}
-tabela <- table(ankieta$PYT_2, ankieta$CZY_KIER)
-n_j <- colSums(tabela)
-n_i <- rowSums(tabela)
-n <- sum(n_i)
-lambda <- 1
-for (i in 1:nrow(tabela)) {
-  for (j in 1:ncol(tabela)) {
-    frac <- (n_i[i] * n_j[j])/ (tabela[i,j] * n)
-    lambda <- lambda * frac^tabela[i, j]
+```{r, warning = FALSE, message = FALSE}
+poziom_kretyczny <- function(zmienna1, zmienna2){
+  tabela <- table(zmienna1, zmienna2)
+  n_j <- colSums(tabela)
+  n_i <- rowSums(tabela)
+  n <- sum(n_i)
+  lambda <- 1
+  for (i in 1:nrow(tabela)) {
+    for (j in 1:ncol(tabela)) {
+      frac <- (n_i[i] * n_j[j])/ (tabela[i,j] * n)
+      lambda <- lambda * frac^tabela[i, j]
+    }
+    
   }
-  
-}
-G_2 <- -2*log(lambda)
-p <- 1 - pchisq(G_2, (nrow(tabela)-1)*(ncol(tabela)-1) )
-p
+  G_2 <- -2*log(lambda)
+  p <- 1 - pchisq(G_2, (nrow(tabela)-1)*(ncol(tabela)-1) )
+  return(p)
+}  
+poziom_kretyczny(ankieta$PYT_2, ankieta$CZY_KIER)
 ```
 # Część IV i V
 
@@ -366,7 +381,8 @@ Przeprowadzone wsród brytyjskich mężczyzn badanie trwające 20 lat wykazało,
  względnego i ilorazu szans. Zinterpretuj wartości. Związek której pary zmiennych jest
  silniejszy?
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-x <- matrix(c(kkier,mkier,k-kkier,m-mkier), nrow =2, byrow = TRUE, dimnames = list(CZY_KIER = c("Tak", "Nie"), PŁEĆ = c("K", "M")))
+x <- matrix(c(0.00140, 0.00010, 0.00669,0.00413), nrow =2, byrow = FALSE, dimnames = list(PALI = c("Tak", "Nie"), POWÓD = c("Rak", "Serce")))
+x
 ```
  
  
@@ -383,8 +399,9 @@ ankieta <- ankieta |>
     )) 
 ```
 ## Zadanie 13
-Oblicz warto´ sci odpowiednich miar współzmienno´ sci (współczynnik tau lub
+Oblicz wartości odpowiednich miar współzmienności (współczynnik tau lub
  współczynnik gamma) dla zmiennych:
+ 
 ### Zadanie 13.1
 stopień zadowolenia ze szkoleń w kontekście dopasowania do indywidualnych potrzeb w
  pierwszym badanym okresie i zajmowane stanowisko,
@@ -394,6 +411,7 @@ table1 <- table(ankieta$CZY_ZADOW, ankieta$CZY_KIER)
 GoodmanKruskalTau(table1)
 ``` 
 Bardzo małe $\tau$ oznacza bardzo słabą zależność (możemy przyjąć, że zmienne są niezależne).
+
 ### Zadanie 13.2
 stopień zadowolenia ze szkoleń w kontekście dopasowania do indywidualnych potrzeb w
  pierwszym badanym okresie i staż pracy,
@@ -405,6 +423,7 @@ GoodmanKruskalTau(table2)
 GoodmanKruskalGamma(table2)
 ```
 $\tau \approx 0.009$ oraz $\gamma > 0$ sugeruje, że mamy do czynienia z bardzo słabą dodatnią zależnością.
+
 ### Zadanie 13.3
 zajmowane stanowisko i staż pracy.
 ```{r, echo = FALSE, warning = FALSE}
@@ -422,65 +441,47 @@ Na podstawie informacji przedstawionych na wykładzie napisz własną funkcję
  analizę korespondencji dla danych dotyczących stopnia zadowolenia ze szkoleń w kontekśie
  dopasowania do indywidualnych potrzeb w pierwszym badanym okresie oraz stażu pracy.
  
-```{r, echo = FALSE, warning = FALSE}
-tabela <- table(ankieta$PYT_2, ankieta$STAŻ)
-P <- as.matrix(tabela/sum(tabela))
-r <- rowSums(P)
-c <- colSums(P)
-Dr <- diag(r)
-Dc <- diag(c)
-Dr_1 <- solve(Dr)
-Dc_1 <- solve(Dc)
-R <- Dr_1 %*% P
-C <- P %*% Dc_1
-A <- Dr_1^(1/2) %*% (P - r %*% t(c)) %*% Dc_1^(1/2)
-b <- svd(A)
-U <- b$u
-V <- b$v
-F <- Dr_1^(1/2) %*% U
-G <- Dc_1^(1/2) %*% V
-row_stdx <- F[,1] 
-row_stdy <- F[,2]
-col_stdx <- G[,1]
-col_stdy <- G[,2]
-
-plot(row_stdx, row_stdy, col = "blue", pch = 16, xlab = "Współrzędna X", ylab = "Współrzędna Y", main = "Analiza korespondencji - Wiersze",  ylim = c(-4, 2.5), xlim=c(-1,9))
-points(col_stdx, col_stdy, col = "red", pch = 16)
-legend("topright", legend = c("Wiersze", "Kolumny"), col = c("blue", "red"), pch = 16)
-abline(h = 0, col = "black", lty = 2)
-abline(v = 0, col = "black", lty = 2)
-text(row_stdx, row_stdy, labels = as.character(c(-2,-1,1,2)), pos = 3, col = "blue")  # Odpowiedzi wierszy
-text(col_stdx, col_stdy, labels = as.character(c(1,2,3)), pos = 3, col = "red")  # Odpowiedzi kolumn
-
-
-```
-
-```{r, echo = FALSE, warning = FALSE}
-library(ca)
-
-analiza_korespondencji <- function(tablica) {
-  # Analiza korespondencji
-  wynik <- ca(tablica)
+```{r, warning=FALSE, message=FALSE}
+analiza_korespondencji <- function(zmienna1, zmienna2){
+  tabela <- table(zmienna1, zmienna2)
+  P <- as.matrix(tabela/sum(tabela))
+  r <- rowSums(P)
+  c <- colSums(P)
+  Dr <- diag(r)
+  Dc <- diag(c)
+  Dr_1 <- solve(Dr)
+  Dc_1 <- solve(Dc)
+  R <- Dr_1 %*% P
+  C <- P %*% Dc_1
+  A <- Dr_1^(1/2) %*% (P - r %*% t(c)) %*% Dc_1^(1/2)
+  b <- svd(A)
+  U <- b$u
+  V <- b$v
+  F <- Dr_1^(1/2) %*% U
+  G <- Dc_1^(1/2) %*% V
+  row_stdx <- F[,1] 
+  row_stdy <- F[,2]
+  col_stdx <- G[,1]
+  col_stdy <- G[,2]
   
-  # Wydruk wyników
-  cat("Wartości własne:\n")
-  print(wynik$sv^2)
-  
-  cat("\nUdział wyjaśnionej wariancji:\n")
-  print(wynik$eig / sum(wynik$eig))
-  
-  cat("\nWspółrzędne wierszy:\n")
-  print(wynik$rowcoord)
-  
-  cat("\nWspółrzędne kolumn:\n")
-  print(wynik$colcoord)
-  
-  # Wykres
-  plot(wynik, main = "Analiza korespondencji", col.row = "blue", col.col = "red")
-  
-  # Zwrócenie pełnego obiektu
-  invisible(wynik)
+  plot(row_stdx, row_stdy, col = "blue", pch = 16, xlab = "Współrzędna X", ylab = "Współrzędna Y", main = "Analiza korespondencji",  ylim = c(-4, 2.5), xlim=c(-1,9))
+  points(col_stdx, col_stdy, col = "red", pch = 16)
+  legend("topright", legend = c("PYT_2", "STAŻ"), col = c("blue", "red"), pch = 16)
+  abline(h = 0, col = "black", lty = 2)
+  abline(v = 0, col = "black", lty = 2)
+  text(row_stdx, row_stdy, labels = as.character(c(-2,-1,1,2)), pos = 3, col = "blue")  # Odpowiedzi wierszy
+  text(col_stdx, col_stdy, labels = as.character(c(1,2,3)), pos = 3, col = "red")  # Odpowiedzi kolumn
 }
-analiza_korespondencji(tabela)
+analiza_korespondencji(ankieta$PYT_2, ankieta$STAŻ)
+```
+```{r, echo = FALSE, warning = FALSE}
+#To samo możemy uzyskać wykorzystując funkcję wbudowaną.
+
+#library(ca)
+
+#wynik <- ca(tabela)
+#plot(wynik, main = "Analiza korespondencji", col.row = "blue", col.col = "red")
+#invisible(wynik)
+
 ```
 
