@@ -174,7 +174,9 @@ test <- function(x, n, p0, alpha = 0.05) {
   statystyka2 <- 2 * sum(x * log(x / (n * p0)))
   p_val2 <- 1 - pchisq(statystyka2, length(p0)-1)
 
-  return(c(p_val, p_val2))
+  wynik <- c(p_val, p_val2)
+  names(wynik) <- c("pearson", "NW")
+  return(wynik)
 }
 
 
@@ -196,13 +198,19 @@ firma zapewnia odpowiednie wsparcie i materiały umożliwiające skuteczne
 wykorzystanie w praktyce wiedzy zdobytej w trakcie szkoleń?" jest
 równomierny, tzn. jest jednakowe prawdopodobieństwo, że pracownik
 zatrudniony w Dziale Produkcjnym udzielił odpowiedzi "zdecydowanie się
-nie zgadzam", "nie zgadzam się", "nie mam zdania", "zgadzamsię",
+nie zgadzam", "nie zgadzam się", "nie mam zdania", "zgadzam się",
 "zdecydowanie się zgadzam" na pytanie PYT_1. Przyjmij poziom istotności
 0.05. Skorzystaj z funkcji napisanej w zadaniu 2
 
-```{r}
-
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+i <- c(-2, -1, 0, 1, 0)
+X <- sapply(i, function(val) sum(ankieta$PYT_1 == val & ankieta$DZIAŁ == "PD"))
+n <- sum(X)
+test(X, p0, n, alpha)
 ```
+P-wartość wychodzi niższa niż przyjęty poziom ufności($\alpha = 0.05$), więc odrzucamy
+hipotezę zerową, która mówi o równomiernym rozkładzie odpowiedzi. 
+
 
 # Część II
 
@@ -233,7 +241,7 @@ parametry to:
 -   `x` tabela dwurymiarowa w formie macierzy lub typu `factor`
 -   `alternative` określa hipotezę alernatywną ($H_1$)
 -   `simulate.p.value` - wartość określająca sposób obliczania
-    p-wartości w tablicach większych niż \$ 2 \times 2\$
+    p-wartości w tablicach większych niż \$ 2 \times 2\$ (jeśli `TRUE` to używa symulacji Monte Carlo)
 
 Przykładowe użycie funkcji - czy odpowiedzi na 2 pytania typu Tak/Nie są
 zależne?
@@ -254,8 +262,9 @@ wymiarach, np. $2 \times 3$
 
 ```{r}
 # test freemana-haltona
-odpowiedzi2 <- matrix(c(5, 10, 8, 5, 7, 8), nrow = 2, byrow = TRUE, dimnames = list(
-  PYT1 = c("Tak", "Nie"), PYT2 = c("A", "B", "C")))
+odpowiedzi2 <- matrix(c(5, 10, 8, 5, 7, 8), nrow = 2, byrow = TRUE, 
+                  dimnames = list(PYT1 = c("Tak", "Nie"), 
+                                  PYT2 = c("A", "B", "C")))
 fisher.test(odpowiedzi2, simulate.p.value = TRUE, B = 100000)
 ```
 
@@ -281,14 +290,9 @@ x <- matrix(c(kkier,mkier,k-kkier,m-mkier), nrow =2, byrow = TRUE, dimnames = li
 fisher.test(x, alternative="two.sided")$p.value
 ```
 
-Naszą hipotezą $H_0$ jest niezależność zmiennych. W naszym zadaniu
-zmienne, których niezależność testujemy to PŁEĆ oraz CZY_KIER. P-value
-jest wyższa od przyjętego poziomu ufności ($\alpha = 0.05$), więc nie ma
-podstaw do odrzucenia naszej hipotezy zerowej. W statystyce jednak nie
-mówimy, że "prawdopodobieństwo tego, że na stanowisku kierowniczym
+P-wartość na poziomie $\approx 0.67$ jest wyższa od przyjętego poziomu ufności ($\alpha = 0.05$), więc nie mamy podstaw do odrzucenia hipotezy zerowej, $H_0:$ "prawdopodobieństwo tego, że na stanowisku kierowniczym
 pracuje kobieta jest równe prawdopodobieństwu tego, że na stanowisku
-kierowniczym pracuje mężczyzna", a zamiast tego mówimy, że nie ma
-podstaw do odrzucenia tej hipotezy.
+kierowniczym pracuje mężczyzna". 
 
 ## Zadanie 6
 
@@ -338,12 +342,12 @@ Czerwony słupek to reszta istotna. Czarny to reszta mało istotna.
 
 ## Zadanie 9
 
-Zapoznaj sie z funkcja słuzaca do generowania realizacji wektorów
-losowych z rozkładu wielomianowego, a nastepnie korzystajac z niej
-przeprowadz symulacje w celu oszacowania mocy testu Fishera oraz mocy
+Zapoznaj się z funkcją służącą do generowania realizacji wektorów
+losowych z rozkładu wielomianowego, a następnie korzystając z niej
+przeprowadź symulacje w celu oszacowania mocy testu Fishera oraz mocy
 testu chi-kwadrat Pearsona, generujac dane z tabeli 2×2, w której p11 =
-1/40, p12 = 3/40, p21 = 19/40, p22 = 17/40. Symulacje wykonaj dla n =50,
-n=100 oraz n=1000. Sformułuj wnioski
+1/40, p12 = 3/40, p21 = 19/40, p22 = 17/40. Symulacje wykonaj dla n=50,
+n=100 oraz n=1000. Sformułuj wnioski.
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 library(stats)
@@ -376,8 +380,7 @@ colnames(results) <- paste0("n=", n)
 results
 
 ```
-
-**Wnioski** Dla większych $n$ moc testu drastycznie rośnie.
+**Wnioski** Dla najmniejszej próbki oba testy mają dosyć słabą moc, z przewagą testu Pearsona (test Fishera jest bardziej konserwatywny). Dla $n=100$ widzimy znaczącą poprawę, co oznacza, że oba testy są wrażliwe na wielkość próbki. Dla największej próbki ($n=1000$) testy uzyskują maksymalną moc, co oznacza, że przy odpowiednio dużej próbce test wykryje zależność za każdym razem, gdy istnieje ona między badanymi zmiennymi.
 
 ## Zadanie 10
 
@@ -404,7 +407,7 @@ poziom_kretyczny <- function(zmienna1, zmienna2){
   p <- 1 - pchisq(G_2, (nrow(tabela)-1)*(ncol(tabela)-1) )
   return(p)
 }  
-poziom_kretyczny(ankieta$PYT_2, ankieta$CZY_KIER)
+unname(poziom_kretyczny(ankieta$PYT_2, ankieta$CZY_KIER))
 ```
 
 # Część IV i V
@@ -485,7 +488,7 @@ p12 <- 55623
 p21 <- 703
 p22 <- 441239
 y <- matrix(c(p11, p12, p21, p22), nrow = 2, byrow = TRUE, dimnames = list(Pasy = c("bez", "z"), Śmiertelny = c("tak", "nie")))
-y
+#y
 Pi1 <- p11/(p11+p12)
 Pi2 <- p21/(p21+p22)
 Pii <- c(Pi1, Pi2)
@@ -496,10 +499,8 @@ Pii
 ### Zadanie 12.2
 
 Oszacuj warunkowe prawdopodobieństwo użycia pasa bezpieczeństwa ze
-względu na drugą
-zmienną, tj. dla kierowców i pasażerów ze śmiertelnymi obrażeniami oraz
-dla kierowców i
-pasażerów, którzy przeżyli wypadek.
+względu na drugą zmienną, tj. dla kierowców i pasażerów ze śmiertelnymi obrażeniami oraz
+dla kierowców i pasażerów, którzy przeżyli wypadek.
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 Pi1 <- p21/(p11+p21)
@@ -512,10 +513,8 @@ Pii
 ### Zadanie 12.3
 
 Jaki jest najbardziej naturalny wybór dla zmiennej objaśnianej w tym
-badaniu? Dla
-takiego wyboru wyznacz i zinterpretuj różnicę proporcji, ryzyko względne
-oraz iloraz szans.
-Dlaczego wartości ryzyka względnego i ilorazu szans przyjmują zbliżone
+badaniu? Dla takiego wyboru wyznacz i zinterpretuj różnicę proporcji, ryzyko względne
+oraz iloraz szans. Dlaczego wartości ryzyka względnego i ilorazu szans przyjmują zbliżone
 wartości?
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
@@ -531,8 +530,14 @@ parametry <- function(pi1, pi2){
   names(wyniki) <- c("RP", "RR", "OR")
   return(wyniki)
 }  
-# tu trzeba wybrać dla których p obliczamy
+Pi1 <- p11/(p11+p12)
+Pi2 <- p21/(p21+p22)
+Pii <- c(Pi1, Pi2)
+names(Pii) <- c("bez pasów", "z pasami")
+#Pii
+parametry(Pi1, Pi2)
 ```
+Naturalnym wyborem jest badanie śmiertelności (zmiennej objaśnianej) ze względu na fakt zapięcia pasów (zmienna objaśniająca). Porównujemy prawdopodobieństwa śmierci w grupie nie zapinających pasy ($\Pi_1$) i zapinających pasy ($\Pi_2$). Różnica proporcji wynosi niecałe 2%, jednak ryzyko względne pokazuje, że $\Pi_1 = 12 \Pi_2$. Iloraz szans, w naszym przypadku wartość bliska $12$, oznacza, że w pierwszym przypadku (brak pasów) prawdopodobieństwo sukcesu (śmierci) jest 12-krotne większe niż w grupie zapinających pasy. Dwa ostatnie wskaźniki mają zbliżone wartości, ponieważ z definicji $OR = RR \frac{1-\Pi_2}{1-\Pi_1}$, co dla $\Pi_1\approx \Pi_2 \approx 0$ (jak w naszym przypadku) sprawia, że wartości są zbieżne.
 
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 library(tidyverse)
@@ -628,9 +633,14 @@ analiza_korespondencji <- function(zmienna1, zmienna2){
   col_stdx <- G[,1]
   col_stdy <- G[,2]
   
-  plot(row_stdx, row_stdy, col = "blue", pch = 16, xlab = "X", 
-       ylab = "Y", main = "Analiza korespondencji",  
-       ylim = c(-4, 2.5), xlim=c(-1,9))
+  plot(row_stdx, row_stdy, col = "blue", pch = 16, 
+       xlab = paste0("Wymiar 1 (", round(100*b$d[1]^2/sum(b$d^2), 1), "%)"), 
+       ylab = paste0("Wymiar 2 (", round(100*b$d[2]^2/sum(b$d^2), 1), "%)"), 
+       main = "Analiza korespondencji",  
+       ylim = c(-4, 2.5), xlim=c(-1,9)
+       #x = ,
+       #y = ,
+       )
   points(col_stdx, col_stdy, col = "red", pch = 16)
   legend("topright", legend = c("PYT_2", "STAŻ"), col = c("blue", "red"), pch = 16)
   abline(h = 0, col = "black", lty = 2)
@@ -640,9 +650,17 @@ analiza_korespondencji <- function(zmienna1, zmienna2){
 }
 analiza_korespondencji(ankieta$PYT_2, ankieta$STAŻ)
 ```
+**Wnioski:**
+- Osoby o najkrótszym stażu oceniały szkolenia bardzo negatywnie
+
+- Pracownicy o średnim stażu oceniali szkolenia bardziej neutralnie (dużo odpowiedzi 2, ale również -1.
+
+- Pracownicy z najdłuższym stażem (sumarycznie) odpowiadali dosyć neutralnie, nie widać mocnej tendencji w żadną stronę
+
 
 ```{r, echo = FALSE, warning = FALSE}
-#To samo możemy uzyskać wykorzystując funkcję wbudowaną.
+# To samo możemy uzyskać wykorzystując funkcję wbudowaną.
+# Niestety tworzy problem przy renderowaniu do pdf
 
 #library(ca)
 
