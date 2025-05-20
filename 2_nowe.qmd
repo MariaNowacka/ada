@@ -188,14 +188,18 @@ test(x, n, p0, alpha)
 ```
 
 ## Zadanie 3
- Na podstawie danych z ankiety z poprzedniej listy zweryfikuj hipotezę, że w grupie
- pracowników zatrudnionwych w Dziale Produktowym rozkład odpowiedzi na pytanie "Jak
- bardzo zgadzasz się ze stwierdzeniem, że firma zapewnia odpowiednie wsparcie i materiały
- umożliwiające skuteczne wykorzystanie w praktyce wiedzy zdobytej w trakcie szkoleń?" jest
- równomierny, tzn. jest jednakowe prawdopodobieństwo, że pracownik zatrudniony w Dziale
- Produkcjnym udzielił odpowiedzi "zdecydowanie się nie zgadzam", "nie zgadzam się", "nie
- mam zdania", "zgadzamsię", "zdecydowanie się zgadzam" na pytanie PYT_1. Przyjmij poziom
- istotności 0.05. Skorzystaj z funkcji napisanej w zadaniu 2
+
+Na podstawie danych z ankiety z poprzedniej listy zweryfikuj hipotezę,
+że w grupie pracowników zatrudnionwych w Dziale Produktowym rozkład
+odpowiedzi na pytanie "Jak bardzo zgadzasz się ze stwierdzeniem, że
+firma zapewnia odpowiednie wsparcie i materiały umożliwiające skuteczne
+wykorzystanie w praktyce wiedzy zdobytej w trakcie szkoleń?" jest
+równomierny, tzn. jest jednakowe prawdopodobieństwo, że pracownik
+zatrudniony w Dziale Produkcjnym udzielił odpowiedzi "zdecydowanie się
+nie zgadzam", "nie zgadzam się", "nie mam zdania", "zgadzamsię",
+"zdecydowanie się zgadzam" na pytanie PYT_1. Przyjmij poziom istotności
+0.05. Skorzystaj z funkcji napisanej w zadaniu 2
+
 ```{r}
 
 ```
@@ -210,8 +214,10 @@ Freemana-Haltona, odpowiednie do badania zależności w tabelach
 kontyngencji.
 
 ## Zadanie 4
+
 Zapoznaj się z funkcjami służącymi do wykonania testu Fishera oraz testu
- Freemana-Haltona.
+Freemana-Haltona.
+
 ```{r}
 # fisher.test(x, y = NULL, workspace = 200000, hybrid = FALSE,
 #            hybridPars = c(expect = 5, percent = 80, Emin = 1),
@@ -219,13 +225,19 @@ Zapoznaj się z funkcjami służącymi do wykonania testu Fishera oraz testu
 #            conf.int = TRUE, conf.level = 0.95,
 #            simulate.p.value = FALSE, B = 2000)
 ```
-Funkcja przyjmuje wiele argumentów, niektóre tylko w przypadku macierzy $ 2 \times 2$. W formie w której zostało wyświetlone, najważniejsze parametry to:
 
-- `x` tabela dwurymiarowa w formie macierzy lub typu `factor`
-- `alternative` określa hipotezę alernatywną ($H_1$)
-- `simulate.p.value` - wartość określająca sposób obliczania p-wartości w tablicach większych niż $ 2 \times 2$
+Funkcja przyjmuje wiele argumentów, niektóre tylko w przypadku macierzy
+\$ 2 \times 2\$. W formie w której zostało wyświetlone, najważniejsze
+parametry to:
 
-Przykładowe użycie funkcji - czy odpowiedzi na 2 pytania typu Tak/Nie są zależne?
+-   `x` tabela dwurymiarowa w formie macierzy lub typu `factor`
+-   `alternative` określa hipotezę alernatywną ($H_1$)
+-   `simulate.p.value` - wartość określająca sposób obliczania
+    p-wartości w tablicach większych niż \$ 2 \times 2\$
+
+Przykładowe użycie funkcji - czy odpowiedzi na 2 pytania typu Tak/Nie są
+zależne?
+
 ```{r}
 # test fishera
 odpowiedzi <-
@@ -235,22 +247,31 @@ matrix(c(13, 11, 5, 31),
                        PYT2 = c("Tak", "Nie")))
 fisher.test(odpowiedzi)$p.value
 ```
-P-value mniejsze od poziomu istotności, więc odrzucamy hipotezę $H_0$ o niezależności zmiennych.
-Wykonajmy również test dla tabeli o większych wymiarach, np. $2 \times 3$
+
+P-value mniejsze od poziomu istotności, więc odrzucamy hipotezę $H_0$ o
+niezależności zmiennych. Wykonajmy również test dla tabeli o większych
+wymiarach, np. $2 \times 3$
+
 ```{r}
 # test freemana-haltona
-odpowiedzi2 <- matrix(c(5, 10, 8, 5, 7, 8), nrow = 2, byrow = TRUE, dimnames = list(PYT1 = c("Tak", "Nie"),
-                       PYT2 = c("A", "B", "C")))
+odpowiedzi2 <- matrix(c(5, 10, 8, 5, 7, 8), nrow = 2, byrow = TRUE, dimnames = list(
+  PYT1 = c("Tak", "Nie"), PYT2 = c("A", "B", "C")))
 fisher.test(odpowiedzi2, simulate.p.value = TRUE, B = 100000)
 ```
-P-value jest większe od poziomu istotności (przyjmujemy $\alpha = 0.05$), więc nie mamy podstaw aby odrzucić hipotezę $H_0$ o niezależności zmiennych.
+
+P-value jest większe od poziomu istotności (przyjmujemy
+$\alpha = 0.05$), więc nie mamy podstaw aby odrzucić hipotezę $H_0$ o
+niezależności zmiennych.
 
 ## Zadanie 5
- Korzystajac z testu Fishera, na poziomie istotnosci 0.05, zweryfikuj hipotezę, że
- zmienna PŁEĆ i zmienna CZY_KIER są niezależne. Czy na poziomie istotności 0.05 możemy
- wnioskować, że prawdopodobieństwo tego, że na stanowisku kierowniczym pracuje kobieta
- jest równe prawdopodobieństwu tego, że na stanowisku kierowniczym pracuje mężczyzna?
- Uzasadnij odpowiedź.
+
+Korzystajac z testu Fishera, na poziomie istotnosci 0.05, zweryfikuj
+hipotezę, że zmienna PŁEĆ i zmienna CZY_KIER są niezależne. Czy na
+poziomie istotności 0.05 możemy wnioskować, że prawdopodobieństwo tego,
+że na stanowisku kierowniczym pracuje kobieta jest równe
+prawdopodobieństwu tego, że na stanowisku kierowniczym pracuje
+mężczyzna? Uzasadnij odpowiedź.
+
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 kkier <- sum(ankieta$PŁEĆ == 'K' & ankieta$CZY_KIER == 'Tak')
 k <- sum(ankieta$PŁEĆ == 'K')
@@ -259,7 +280,15 @@ m <- sum(ankieta$PŁEĆ == 'M')
 x <- matrix(c(kkier,mkier,k-kkier,m-mkier), nrow =2, byrow = TRUE, dimnames = list(CZY_KIER = c("Tak", "Nie"), PŁEĆ = c("K", "M")))
 fisher.test(x, alternative="two.sided")$p.value
 ```
-Naszą hipotezą $H_0$ jest niezależność zmiennych. W naszym zadaniu zmienne, których niezależność testujemy to PŁEĆ oraz CZY_KIER.  P-value jest wyższa od przyjętego poziomu ufności ($\alpha = 0.05$), więc nie ma podstaw do odrzucenia naszej hipotezy zerowej. W statystyce jednak nie mówimy, że "prawdopodobieństwo tego, że na stanowisku kierowniczym pracuje kobieta jest równe prawdopodobieństwu tego, że na stanowisku kierowniczym pracuje mężczyzna", a zamiast tego mówimy, że nie ma podstaw do odrzucenia tej hipotezy.
+
+Naszą hipotezą $H_0$ jest niezależność zmiennych. W naszym zadaniu
+zmienne, których niezależność testujemy to PŁEĆ oraz CZY_KIER. P-value
+jest wyższa od przyjętego poziomu ufności ($\alpha = 0.05$), więc nie ma
+podstaw do odrzucenia naszej hipotezy zerowej. W statystyce jednak nie
+mówimy, że "prawdopodobieństwo tego, że na stanowisku kierowniczym
+pracuje kobieta jest równe prawdopodobieństwu tego, że na stanowisku
+kierowniczym pracuje mężczyzna", a zamiast tego mówimy, że nie ma
+podstaw do odrzucenia tej hipotezy.
 
 ## Zadanie 6
 
@@ -270,11 +299,14 @@ Naszą hipotezą $H_0$ jest niezależność zmiennych. W naszym zadaniu zmienne,
 # Część III
 
 ## Zadanie 7 i 8
-Zapoznaj się z funkcją służącą do wykonania testu niezależności chi-kwadrat i zweryfikuj hipotezę, że stopień zadowolenia ze szkoleń w kontekście dopasowania do indywidualnych potrzeb w pierwszym
- badanym okresie nie zależy od zajmowanego stanowiska. Przyjmij poziom istotności 0.01.
- Wynik testu porównaj z wynikiem uzyskanym w zadaniu 6. Zaprezentuj reszty wyznaczane w
- teście na wykresie asocjacyjnym i dokonaj jego interpretacji.
 
+Zapoznaj się z funkcją służącą do wykonania testu niezależności
+chi-kwadrat i zweryfikuj hipotezę, że stopień zadowolenia ze szkoleń w
+kontekście dopasowania do indywidualnych potrzeb w pierwszym badanym
+okresie nie zależy od zajmowanego stanowiska. Przyjmij poziom istotności
+0.01. Wynik testu porównaj z wynikiem uzyskanym w zadaniu 6. Zaprezentuj
+reszty wyznaczane w teście na wykresie asocjacyjnym i dokonaj jego
+interpretacji.
 
 ```{r}
 dane <- matrix(c(20, 30, 25, 25), nrow = 2, byrow = TRUE)
@@ -305,10 +337,14 @@ Czerwony słupek to reszta istotna. Czarny to reszta mało istotna.
 ```
 
 ## Zadanie 9
- Zapoznaj sie z funkcja słuzaca do generowania realizacji wektorów losowych
- z rozkładu wielomianowego, a nastepnie korzystajac z niej przeprowadz symulacje w celu
- oszacowania mocy testu Fishera oraz mocy testu chi-kwadrat Pearsona, generujac dane z tabeli 2×2, w której p11 = 1/40, p12 = 3/40, p21 = 19/40, p22 = 17/40. Symulacje wykonaj dla n =50, n=100 oraz n=1000. Sformułuj wnioski
- 
+
+Zapoznaj sie z funkcja słuzaca do generowania realizacji wektorów
+losowych z rozkładu wielomianowego, a nastepnie korzystajac z niej
+przeprowadz symulacje w celu oszacowania mocy testu Fishera oraz mocy
+testu chi-kwadrat Pearsona, generujac dane z tabeli 2×2, w której p11 =
+1/40, p12 = 3/40, p21 = 19/40, p22 = 17/40. Symulacje wykonaj dla n =50,
+n=100 oraz n=1000. Sformułuj wnioski
+
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 library(stats)
 n <- c(50,100,1000)
@@ -340,15 +376,16 @@ colnames(results) <- paste0("n=", n)
 results
 
 ```
-**Wnioski**
-Dla większych $n$ moc testu drastycznie rośnie.
 
+**Wnioski** Dla większych $n$ moc testu drastycznie rośnie.
 
 ## Zadanie 10
-Napisz funkcje, która dla danych z tablicy dwudzielczej oblicza wartosc poziomu
- krytycznego w tescie niezaleznosci opartym na ilorazie wiarogodnosci. Korzystajac z napisanej
- funkcji, wykonaj test dla danych przeanalizowanych w zadaniu 8.
- 
+
+Napisz funkcje, która dla danych z tablicy dwudzielczej oblicza wartosc
+poziomu krytycznego w tescie niezaleznosci opartym na ilorazie
+wiarogodnosci. Korzystajac z napisanej funkcji, wykonaj test dla danych
+przeanalizowanych w zadaniu 8.
+
 ```{r, warning = FALSE, message = FALSE}
 poziom_kretyczny <- function(zmienna1, zmienna2){
   tabela <- table(zmienna1, zmienna2)
@@ -369,23 +406,134 @@ poziom_kretyczny <- function(zmienna1, zmienna2){
 }  
 poziom_kretyczny(ankieta$PYT_2, ankieta$CZY_KIER)
 ```
+
 # Część IV i V
 
 ## Zadanie 11
-Przeprowadzone wsród brytyjskich mężczyzn badanie trwające 20 lat wykazało, że
- odsetek zmarłych (na rok) z powodu raka płuc wynosił 0,00140 wsród osób palących papierosy
- i 0,00010 wsród osób niepalących. Odsetek zmarłych z powodu choroby niedokrwiennej
- serca wynosił 0,00669 dla palaczy i 0,00413 dla osób niepalących. Opisz związek pomiędzy
- paleniem papierosów a śmiercią z powodu raka płuc oraz związek pomiędzy paleniem
- papierosów a śmiercią z powodu choroby serca. Skorzystaj z różnicy proporcji, ryzyka
- względnego i ilorazu szans. Zinterpretuj wartości. Związek której pary zmiennych jest
- silniejszy?
+
+Przeprowadzone wsród brytyjskich mężczyzn badanie trwające 20 lat
+wykazało, że odsetek zmarłych (na rok) z powodu raka płuc wynosił
+0,00140 wsród osób palących papierosy i 0,00010 wsród osób niepalących.
+Odsetek zmarłych z powodu choroby niedokrwiennej serca wynosił 0,00669
+dla palaczy i 0,00413 dla osób niepalących. Opisz związek pomiędzy
+paleniem papierosów a śmiercią z powodu raka płuc oraz związek pomiędzy
+paleniem papierosów a śmiercią z powodu choroby serca. Skorzystaj z
+różnicy proporcji, ryzyka względnego i ilorazu szans. Zinterpretuj
+wartości. Związek której pary zmiennych jest silniejszy?
+
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
-x <- matrix(c(0.00140, 0.00010, 0.00669,0.00413), nrow =2, byrow = FALSE, dimnames = list(PALI = c("Tak", "Nie"), POWÓD = c("Rak", "Serce")))
+p11 <-  0.00140
+p21 <-  0.00010
+p12 <- 0.00669
+p22 <- 0.00413
+x <- matrix(c(p11, p21, p12, p22), nrow =2, byrow = FALSE, dimnames = list(c("Pali", "Nie pali"), c("Płuca", "Serce")))
 x
+# różnica proporcji
+RP_pluca <- p11-p21
+RP_serce <- p12-p22
+# ryzyko względne
+RR_pluca <- p11/p21
+RR_serce <- p12/p22 
+"iloraz szans"
+OR_pluca <- (p11/(1-p11))/(p21/(1-p21))
+OR_serce <- (p12/(1-p12))/(p22/(1-p22))
+
+wyniki <- matrix(c(RP_pluca, RP_serce, RR_pluca, RR_serce, OR_pluca, OR_serce), nrow=3, byrow = TRUE, dimnames = list(c("RP", "RR", "OR"), c("płuca", "serce")))
+wyniki
 ```
- 
- 
+
+WNIOSKI:
+
+-   Różnica proporcji w obu przypadkach jest niewielka: 0.0013 (płuca)
+    oraz 0.00256 (serce). Wynika to z faktu, że podane
+    prawdopodobieństwa były rzędu 0.001 lub mniejsze.
+
+-   Patrząc jednak na ryzyko względne (RR) widzimy, że w pierwszym
+    przypadku wartość jest o wiele większa niż w drugim. Oznacza to, że
+    dla osób cierpiących na raka płuc odsetek zmarłych był 14-krotnie
+    większy dla osób palących niż niepalących. Dla chorych na serce
+    różnica wynosi zdecydowanie mniej, około 1.6, jednak i tu widzimy,
+    że większy odsetek był w grupie palących.
+
+-   Iloraz szans (OR) mówi nam, że szansa śmierci na raka płuc w grupie
+    palących jest 14 razy większa niż w grupie niepalących a szansa
+    śmierci na chorobę niedokrwienną serca około 1.6 razy większa dla
+    palaczy niż niepalących.
+
+## Zadanie 12
+
+Tabela 1 przedstawia wyniki dotyczące śmiertelności kierowców i
+pasażerów w wypadkach samochodowych na Florydzie w 2008 roku, w
+zależnożci od tego, czy osoba miała zapięty pas bezpieczeństwa czy nie.
+
+| Tabela 1         | Śmiertelny | Nieśmiertelny |
+|------------------|------------|---------------|
+| Bez pasów        | 1085       | 55 623        |
+| Z pasami         | 703        | 441 239       |
+
+### Zadanie 12.1
+
+Oszacuj warunkowe prawdopodobieństwo śmierci w wypadku ze względu na
+drugą
+zmienną, tj. dla kierowców i pasażerów, który użyli pasa bezpieczeństwa
+oraz dla
+kierowców i pasażerów, który nie użyli pasa bezpieczeństwa.
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+p11 <- 1085
+p12 <- 55623
+p21 <- 703
+p22 <- 441239
+y <- matrix(c(p11, p12, p21, p22), nrow = 2, byrow = TRUE, dimnames = list(Pasy = c("bez", "z"), Śmiertelny = c("tak", "nie")))
+y
+Pi1 <- p11/(p11+p12)
+Pi2 <- p21/(p21+p22)
+Pii <- c(Pi1, Pi2)
+names(Pii) <- c("bez pasów", "z pasami")
+Pii
+```
+
+### Zadanie 12.2
+
+Oszacuj warunkowe prawdopodobieństwo użycia pasa bezpieczeństwa ze
+względu na drugą
+zmienną, tj. dla kierowców i pasażerów ze śmiertelnymi obrażeniami oraz
+dla kierowców i
+pasażerów, którzy przeżyli wypadek.
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+Pi1 <- p21/(p11+p21)
+Pi2 <- p22/(p12+p22)
+Pii <- c(Pi1, Pi2)
+names(Pii) <- c("śmiertelne", "nieśmiertelne")
+Pii
+```
+
+### Zadanie 12.3
+
+Jaki jest najbardziej naturalny wybór dla zmiennej objaśnianej w tym
+badaniu? Dla
+takiego wyboru wyznacz i zinterpretuj różnicę proporcji, ryzyko względne
+oraz iloraz szans.
+Dlaczego wartości ryzyka względnego i ilorazu szans przyjmują zbliżone
+wartości?
+
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
+parametry <- function(pi1, pi2){
+  # różnica proporcji
+  RP <- pi1-pi2
+  # ryzyko względne
+  RR <- pi1/pi2
+  "iloraz szans"
+  OR <- (pi1/(1-pi1))/(pi2/(1-pi2))
+  
+  wyniki <- c(RP, RR, OR)
+  names(wyniki) <- c("RP", "RR", "OR")
+  return(wyniki)
+}  
+# tu trzeba wybrać dla których p obliczamy
+```
+
 ```{r, echo = FALSE, warning = FALSE, message = FALSE}
 library(tidyverse)
 library(readr)
@@ -398,49 +546,65 @@ ankieta <- ankieta |>
       TRUE ~ NA_character_
     )) 
 ```
+
 ## Zadanie 13
+
 Oblicz wartości odpowiednich miar współzmienności (współczynnik tau lub
- współczynnik gamma) dla zmiennych:
- 
+współczynnik gamma) dla zmiennych:
+
 ### Zadanie 13.1
-stopień zadowolenia ze szkoleń w kontekście dopasowania do indywidualnych potrzeb w
- pierwszym badanym okresie i zajmowane stanowisko,
+
+stopień zadowolenia ze szkoleń w kontekście dopasowania do
+indywidualnych potrzeb w pierwszym badanym okresie i zajmowane
+stanowisko,
+
 ```{r, echo = FALSE, warning = FALSE}
 library(DescTools)
 table1 <- table(ankieta$CZY_ZADOW, ankieta$CZY_KIER)
 GoodmanKruskalTau(table1)
-``` 
-Bardzo małe $\tau$ oznacza bardzo słabą zależność (możemy przyjąć, że zmienne są niezależne).
+```
+
+Bardzo małe $\tau$ oznacza bardzo słabą zależność (możemy przyjąć, że
+zmienne są niezależne).
 
 ### Zadanie 13.2
-stopień zadowolenia ze szkoleń w kontekście dopasowania do indywidualnych potrzeb w
- pierwszym badanym okresie i staż pracy,
- 
+
+stopień zadowolenia ze szkoleń w kontekście dopasowania do
+indywidualnych potrzeb w pierwszym badanym okresie i staż pracy,
+
 ```{r, echo = FALSE, warning = FALSE}
 library(DescTools)
 table2 <- table(ankieta$CZY_ZADOW, ankieta$STAŻ)
 GoodmanKruskalTau(table2)
 GoodmanKruskalGamma(table2)
 ```
-$\tau \approx 0.009$ oraz $\gamma > 0$ sugeruje, że mamy do czynienia z bardzo słabą dodatnią zależnością.
+
+$\tau \approx 0.009$ oraz $\gamma > 0$ sugeruje, że mamy do czynienia z
+bardzo słabą dodatnią zależnością.
 
 ### Zadanie 13.3
+
 zajmowane stanowisko i staż pracy.
+
 ```{r, echo = FALSE, warning = FALSE}
 library(DescTools)
 table3 <- table(ankieta$CZY_KIER, ankieta$STAŻ)
 GoodmanKruskalTau(table3)
 ```
+
 Dosyć małe $\tau$ oznacza słabą zależność zmiennych.
 
 ## Zadanie 14
-Na podstawie informacji przedstawionych na wykładzie napisz własną funkcję
- do przeprowadzania analizy korespondencji. Funkcja powinna przyjmować jako argument
- tablicę dwudzielczą i zwracać obliczone wartości odpowiednich wektorów i macierzy,
- współrzędnych punktów oraz odpowiedni wykres. Korzystając z napisanej funkcji wykonaj
- analizę korespondencji dla danych dotyczących stopnia zadowolenia ze szkoleń w kontekśie
- dopasowania do indywidualnych potrzeb w pierwszym badanym okresie oraz stażu pracy.
- 
+
+Na podstawie informacji przedstawionych na wykładzie napisz własną
+funkcję do przeprowadzania analizy korespondencji. Funkcja powinna
+przyjmować jako argument tablicę dwudzielczą i zwracać obliczone
+wartości odpowiednich wektorów i macierzy, współrzędnych punktów oraz
+odpowiedni wykres. Korzystając z napisanej funkcji wykonaj analizę
+korespondencji dla danych dotyczących stopnia zadowolenia ze szkoleń w
+kontekśie dopasowania do indywidualnych potrzeb w pierwszym badanym
+okresie oraz stażu pracy.
+
 ```{r, warning=FALSE, message=FALSE}
 analiza_korespondencji <- function(zmienna1, zmienna2){
   tabela <- table(zmienna1, zmienna2)
@@ -464,16 +628,19 @@ analiza_korespondencji <- function(zmienna1, zmienna2){
   col_stdx <- G[,1]
   col_stdy <- G[,2]
   
-  plot(row_stdx, row_stdy, col = "blue", pch = 16, xlab = "Współrzędna X", ylab = "Współrzędna Y", main = "Analiza korespondencji",  ylim = c(-4, 2.5), xlim=c(-1,9))
+  plot(row_stdx, row_stdy, col = "blue", pch = 16, xlab = "X", 
+       ylab = "Y", main = "Analiza korespondencji",  
+       ylim = c(-4, 2.5), xlim=c(-1,9))
   points(col_stdx, col_stdy, col = "red", pch = 16)
   legend("topright", legend = c("PYT_2", "STAŻ"), col = c("blue", "red"), pch = 16)
   abline(h = 0, col = "black", lty = 2)
   abline(v = 0, col = "black", lty = 2)
-  text(row_stdx, row_stdy, labels = as.character(c(-2,-1,1,2)), pos = 3, col = "blue")  # Odpowiedzi wierszy
-  text(col_stdx, col_stdy, labels = as.character(c(1,2,3)), pos = 3, col = "red")  # Odpowiedzi kolumn
+  text(row_stdx, row_stdy, labels = as.character(c(-2,-1,1,2)), pos = 3, col = "blue")
+  text(col_stdx, col_stdy, labels = as.character(c(1,2,3)), pos = 3, col = "red")
 }
 analiza_korespondencji(ankieta$PYT_2, ankieta$STAŻ)
 ```
+
 ```{r, echo = FALSE, warning = FALSE}
 #To samo możemy uzyskać wykorzystując funkcję wbudowaną.
 
@@ -484,4 +651,3 @@ analiza_korespondencji(ankieta$PYT_2, ankieta$STAŻ)
 #invisible(wynik)
 
 ```
-
