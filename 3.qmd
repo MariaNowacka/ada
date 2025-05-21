@@ -1,0 +1,129 @@
+---
+title: "3"
+format: pdf
+editor: visual
+---
+
+## Lista 3
+
+## Zadanie 1
+
+Napisz funkcj˛e, która zwraca p-wartość w omówionym na wykładzie warunkowym
+
+teście symetrii w przypadku tabeli 2 × 2.
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(readr)
+library(dplyr)
+ankieta <- read.csv("ankieta.csv", sep=";", fileEncoding = "Latin2")
+```
+
+```{r}
+#| echo: false
+p <- function(n12, n21){
+  part <- 0
+  if(n12<(n12+n21)/2){
+    for(i in 0:n12){
+    part <- part + choose(n12+n21,i)*(1/2)^i*(1/2)^(n12+n21-i)
+    }
+    part <- 2*part
+  }
+  if(n12>(n12+n21)/2){
+    for(i in 0:n12+n21){
+    part <- part + choose(n12+n21,i)*(1/2)^i*(1/2)^(n12+n21-i)
+    }
+    part <- 2*part
+  }
+  if(n12==(n12+n21)/2){
+    part <- 1
+  }
+  return(part)
+}
+```
+
+## Zadanie 2
+
+### Zadanie 2.1
+
+```{r}
+tabela <- matrix(c(1, 2, 5, 4), nrow = 2,
+dimnames = list("Lek A" = c("Negatywna", "Pozytywna"),
+"Lek B" = c("Negatywna", "Pozytywna")))
+print(tabela)
+#test McNemara
+mcnemar.test(tabela, correct = TRUE)
+```
+
+### Zadanie 2.2
+
+```{r}
+p(2,5)
+```
+
+```{r}
+binom.test(x = 2, n = 7, p = 0.5, alternative = "two.sided")$p.value
+```
+
+## Zadanie 3
+
+```{r}
+library(stats)
+test_z <- function(n_matrix, p_matrix){
+  D <- (n_matrix[1,2]-n_matrix[2,1])/sum(n_matrix)
+  p1p <- sum(p_matrix[,1])
+  pp1 <- sum(p_matrix[1,])
+  sigma <- (p1p*(1-p1p) + pp1*(1-pp1) - 2*(p_matrix[1,1]*p_matrix[2,2] - p_matrix[1,2]*p_matrix[2,1]))/sum(n_matrix)
+  Z <- D/sqrt(sigma)
+  p <- 2*(1-pnorm(abs(Z)))
+  return(p)
+}
+test_z0 <- function(n_matrix){
+  n12 <- n_matrix[1,2]
+  n21 <- n_matrix[2,1]
+  Z0 <- (n12-n21)/sqrt(n12+n21)
+  p <- 2*(1-pnorm(abs(Z0)))
+  return(p)
+}
+p1 <- 0.5
+n <- 10
+Z_suma <- numeric(n)
+Z0_suma <- numeric(n)
+X <- rbinom(n=n, size=1, prob = p1)
+for(i in 0:1000){
+  for(p in seq(from = 0.01, to = 0.99, by=0.01)){
+    Y <- rbinom(n,1,p)
+    n_mat <- table(factor(X,levels=c(0,1)), factor(Y,levels=c(0,1)))
+    p_mat <- n_mat/sum(n_mat)
+    pz <- test_z(n_mat,p_mat)
+    pz0 <- test_z0(n_mat)
+    if(pz<0.05){
+      Z_suma <- Z_suma+1
+    }
+    if(pz0<0.05){
+      Z0_suma <- Z0_suma+1
+    }
+  }
+}
+```
+
+## Zadanie 4
+
+```{r}
+library(tidyverse)
+ankieta <- ankieta |>
+mutate(
+  CZY_ZADOW = case_when(
+    PYT_2 %in% c(-2, -1) ~ "Niezadowolona",
+    PYT_2 %in% c(2, 1) ~ "Zadowolona",
+    TRUE ~ NA_character_
+))
+ankieta <- ankieta |> mutate(
+  CZY_ZADOW2 = case_when(
+    PYT_3 %in% c(-2, -1) ~ "Niezadowolona",
+    PYT_3 %in% c(2, 1) ~ "Zadowolona",
+    PYT_3 %in% c(0) ~ "-",
+))
+tabela <- table(ankieta$CZY_ZADOW, ankieta$CZY_ZADOW2)
+mcnemar.test(tabela, correct = TRUE)
+```
