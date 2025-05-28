@@ -19,8 +19,7 @@ library(dplyr)
 ankieta <- read.csv("ankieta.csv", sep=";", fileEncoding = "Latin2")
 ```
 
-```{r}
-#| echo: false
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 p <- function(n12, n21){
   part <- 0
   if(n12<(n12+n21)/2){
@@ -57,17 +56,17 @@ mcnemar.test(tabela, correct = TRUE)
 
 ### Zadanie 2.2
 
-```{r}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 p(2,5)
 ```
 
-```{r}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 binom.test(x = 2, n = 7, p = 0.5, alternative = "two.sided")$p.value
 ```
 
 ## Zadanie 3
 
-```{r}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 library(stats)
 test_z <- function(n_matrix, p_matrix){
   D <- (n_matrix[1,2]-n_matrix[2,1])/sum(n_matrix)
@@ -86,30 +85,52 @@ test_z0 <- function(n_matrix){
   return(p)
 }
 p1 <- 0.5
-n <- 10
-Z_suma <- numeric(n)
-Z0_suma <- numeric(n)
+n <- 100
+Z_suma <- numeric(99)
+Z0_suma <- numeric(99)
 X <- rbinom(n=n, size=1, prob = p1)
-for(i in 0:1000){
+for(i in 1:1000){
+  j <- 0
   for(p in seq(from = 0.01, to = 0.99, by=0.01)){
-    Y <- rbinom(n,1,p)
-    n_mat <- table(factor(X,levels=c(0,1)), factor(Y,levels=c(0,1)))
+    j <- j+1
+    repeat{
+      Y <- rbinom(n,1,p)
+      n_mat <- table(factor(X,levels=c(0,1)), factor(Y,levels=c(0,1)))
+      if ((n_mat[1,2] + n_mat[2,1]) > 0) break 
+    }
     p_mat <- n_mat/sum(n_mat)
     pz <- test_z(n_mat,p_mat)
     pz0 <- test_z0(n_mat)
     if(pz<0.05){
-      Z_suma <- Z_suma+1
+      Z_suma[j] <- Z_suma[j]+1
     }
     if(pz0<0.05){
-      Z0_suma <- Z0_suma+1
+      Z0_suma[j] <- Z0_suma[j]+1
     }
   }
 }
 ```
 
+```{r, echo = FALSE, warning=FALSE, message=FALSE, dev="cairo_pdf"}
+# Tworzymy wektor prawdopodobieństw
+p_values <- seq(from = 0.01, to = 0.99, by = 0.01)
+
+moc_Z <- Z_suma / 1000
+moc_Z0 <- Z0_suma / 1000
+
+# Tworzymy wykres
+plot(p_values, moc_Z, type = "l", col = "hotpink", lwd = 2,
+     ylim = c(0, 1), xlab = "p", ylab = "Moc testu",
+     main = "Wykres mocy testów Z i Z0")
+lines(p_values, moc_Z0, col = "darkseagreen", lwd = 2, lty = 2)
+legend("bottomright", legend = c("Test Z", "Test Z0"),
+       col = c("hotpink", "darkseagreen"), lwd = 2, lty = c(1, 2))
+
+```
+
 ## Zadanie 4
 
-```{r}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
 ankieta <- ankieta |>
 mutate(
