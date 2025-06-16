@@ -278,3 +278,34 @@ wynik_a
 wynik_b
 wynik_c
 ```
+
+```{r}
+model_1223 <- glm(Freq ~ CZY_KIER * PYT_2 + PYT_2 * STAŻ, family = poisson, data = tab1)
+tab1$fitted <- fitted(model_1223)
+
+a <- subset(tab1, CZY_KIER == "Tak")
+b <- subset(tab1, STAŻ == 1)
+c <- subset(tab1, STAŻ == 3)
+library(dplyr)
+wynik_a <- a %>%
+  group_by(PYT_2) %>%
+  summarise(freq_sum = sum(Freq),
+            fitted_sum = sum(fitted)) %>%
+  mutate(p_dane = freq_sum / sum(freq_sum),
+         p_model = fitted_sum / sum(fitted_sum))
+wynik_b <- b %>%
+  group_by(STAŻ) %>%
+  summarise(freq_sum = sum(Freq),
+            fitted_sum = sum(fitted)) %>%
+  mutate(p_dane = freq_sum / sum(freq_sum),
+         p_model = fitted_sum / sum(fitted_sum))
+wynik_c <- c %>%
+  group_by(STAŻ) %>%
+  summarise(freq_sum = sum(Freq),
+            fitted_sum = sum(fitted)) %>%
+  mutate(p_dane = freq_sum / sum(freq_sum),
+         p_model = fitted_sum / sum(fitted_sum))
+wynik_a
+wynik_b
+wynik_c
+```
