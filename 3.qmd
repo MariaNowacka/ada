@@ -231,3 +231,50 @@ Dla danych z listy 1, przyjmując za zmienną 1 zmiennaą CZY_KIER, za zmienną 
 \[12 13\] - zmienne CZY_KIER i PYT_2 nie są niezależne, CZY_KIER i STAŻ nie są niezalezne, a PYT_2 i STAŻ są warunkowo niezależne,
 
 \[1 23\] - zmienna CZY_KIER jest niezależna od pozostałych dwóch, PYT_2 i STAŻ, które nie są od siebie niezależne.
+
+# Część IV i V
+
+## Zadanie 8
+
+Przyjmując model log-liniowy \[123\] dla zmiennych opisanych w zadaniu 7 oszacuj prawdopobiebieństwa:
+
+• że osoba pracujżca na stanowisku kierowniczym jest zdecydowanie zadowolona ze szkoleń;
+
+• że osoba o stażu pracy krótszym niż rok pracuje na stanowisku kierowniczym;
+
+• że osoba o stażu pracy powyżej trzech lat nie pracuje na stanowisku kierowniczym.
+
+Jakie byłyby oszacowania powyższych prawdopodobieństw przy założeniu modelu \[12 23\]?
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
+tab1 <- as.data.frame(table(ankieta$CZY_KIER, ankieta$PYT_2, ankieta$STAŻ))
+colnames(tab1) <- c("CZY_KIER", "PYT_2", "STAŻ", "Freq")
+model_123 <- glm(Freq ~ CZY_KIER*PYT_2*STAŻ, data = tab1, family = poisson)
+tab1$fitted <- fitted(model_123)
+
+a <- subset(tab1, CZY_KIER == "Tak")
+b <- subset(tab1, STAŻ == 1)
+c <- subset(tab1, STAŻ == 3)
+library(dplyr)
+wynik_a <- a %>%
+  group_by(PYT_2) %>%
+  summarise(freq_sum = sum(Freq),
+            fitted_sum = sum(fitted)) %>%
+  mutate(p_dane = freq_sum / sum(freq_sum),
+         p_model = fitted_sum / sum(fitted_sum))
+wynik_b <- b %>%
+  group_by(STAŻ) %>%
+  summarise(freq_sum = sum(Freq),
+            fitted_sum = sum(fitted)) %>%
+  mutate(p_dane = freq_sum / sum(freq_sum),
+         p_model = fitted_sum / sum(fitted_sum))
+wynik_c <- c %>%
+  group_by(STAŻ) %>%
+  summarise(freq_sum = sum(Freq),
+            fitted_sum = sum(fitted)) %>%
+  mutate(p_dane = freq_sum / sum(freq_sum),
+         p_model = fitted_sum / sum(fitted_sum))
+wynik_a
+wynik_b
+wynik_c
+```
