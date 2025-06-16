@@ -194,7 +194,7 @@ colnames(p) <- c("wszyscy", "z chorobamu", "bez chorób")
 p
 ```
 
-Chociaż leczenie B "wygrywa" patrząc na całą grupę badanych, po podziale na grupy ze względu na obecność chorób współistniejących możemy zauważyć, że to leczenie A ma większy odsstek wyzdrowień.
+Chociaż leczenie B "wygrywa" patrząc na całą grupę badanych, po podziale na grupy ze względu na obecność chorób współistniejących możemy zauważyć, że to leczenie A ma większy odsetek wyzdrowień.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 Az <- c(17, 101)
@@ -214,7 +214,7 @@ names(pvalues) <- c("wszyscy", "z chorobamu", "bez chorób")
 pvalues
 ```
 
-W przeprowadzonym teście niezależności $\chi ^2$ dla całej grupy p-value jest bardzo małe, więc odrzucamy hipotezę $H_0$ o niezależności. Jednak tem sam test wykonany osobno dla badanych grup - z chorobami współistniejącymi oraz bez chorób - w obu przypadkach daje p-value większą od poziomu istotności, a więc nie mamy podstaw do odrzucania hipotezy zerowej o niezależności zmiennych, to znaczy wyniku leczenia (poprawy) od przyjętego leczenia. To znaczy, że pozorny związek dla całej badanej grupy nie przekłada się na zalezność w podgrupach - a więc jest to klasyczny przypadek paradoksu Simpsona.
+W przeprowadzonym teście niezależności $\chi ^2$ dla całej grupy p-value jest bardzo małe, więc odrzucamy hipotezę $H_0$ o niezależności. Jednak ten sam test wykonany osobno dla badanych grup - z chorobami współistniejącymi oraz bez chorób - w obu przypadkach daje p-value większą od poziomu istotności, a więc nie mamy podstaw do odrzucania hipotezy zerowej o niezależności zmiennych, to znaczy wyniku leczenia (poprawy) od przyjętego leczenia. To znaczy, że pozorny związek dla całej badanej grupy nie przekłada się na zalezność w podgrupach - a więc jest to klasyczny przypadek paradoksu Simpsona.
 
 ## Zadanie 7
 
@@ -238,13 +238,15 @@ Dla danych z listy 1, przyjmując za zmienną 1 zmiennaą CZY_KIER, za zmienną 
 
 Przyjmując model log-liniowy \[123\] dla zmiennych opisanych w zadaniu 7 oszacuj prawdopobiebieństwa:
 
-• że osoba pracujżca na stanowisku kierowniczym jest zdecydowanie zadowolona ze szkoleń;
+• że osoba pracująca na stanowisku kierowniczym jest zdecydowanie zadowolona ze szkoleń;
 
 • że osoba o stażu pracy krótszym niż rok pracuje na stanowisku kierowniczym;
 
 • że osoba o stażu pracy powyżej trzech lat nie pracuje na stanowisku kierowniczym.
 
 Jakie byłyby oszacowania powyższych prawdopodobieństw przy założeniu modelu \[12 23\]?
+
+Zaczynamy od modelu \[123\]:
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 tab1 <- as.data.frame(table(ankieta$CZY_KIER, ankieta$PYT_2, ankieta$STAŻ))
@@ -263,13 +265,13 @@ wynik_a <- a %>%
   mutate(p_dane = freq_sum / sum(freq_sum),
          p_model = fitted_sum / sum(fitted_sum))
 wynik_b <- b %>%
-  group_by(STAŻ) %>%
+  group_by(CZY_KIER) %>%
   summarise(freq_sum = sum(Freq),
             fitted_sum = sum(fitted)) %>%
   mutate(p_dane = freq_sum / sum(freq_sum),
          p_model = fitted_sum / sum(fitted_sum))
 wynik_c <- c %>%
-  group_by(STAŻ) %>%
+  group_by(CZY_KIER) %>%
   summarise(freq_sum = sum(Freq),
             fitted_sum = sum(fitted)) %>%
   mutate(p_dane = freq_sum / sum(freq_sum),
@@ -279,7 +281,9 @@ wynik_b
 wynik_c
 ```
 
-```{r}
+Model \[123\] dobrze oszacował potrzebne prawdopodobieństwa (w 1. tabeli interesuje nas wiersz z odpowiedzią "2" na PYT_2, w 2. i 3. odpowiedź "Tak" w kolumnie CZY_KIER). Zarówno szacowane liczności jak i prawdopodobieństwa są równe dla modelu i danych.
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 model_1223 <- glm(Freq ~ CZY_KIER * PYT_2 + PYT_2 * STAŻ, family = poisson, data = tab1)
 tab1$fitted <- fitted(model_1223)
 
@@ -294,13 +298,13 @@ wynik_a <- a %>%
   mutate(p_dane = freq_sum / sum(freq_sum),
          p_model = fitted_sum / sum(fitted_sum))
 wynik_b <- b %>%
-  group_by(STAŻ) %>%
+  group_by(CZY_KIER) %>%
   summarise(freq_sum = sum(Freq),
             fitted_sum = sum(fitted)) %>%
   mutate(p_dane = freq_sum / sum(freq_sum),
          p_model = fitted_sum / sum(fitted_sum))
 wynik_c <- c %>%
-  group_by(STAŻ) %>%
+  group_by(CZY_KIER) %>%
   summarise(freq_sum = sum(Freq),
             fitted_sum = sum(fitted)) %>%
   mutate(p_dane = freq_sum / sum(freq_sum),
@@ -309,3 +313,61 @@ wynik_a
 wynik_b
 wynik_c
 ```
+
+Dla modelu \[12 23\] odpowiedź na pierwszy podpunkt się zgadza - wartości w danych są równe przewidywanym przez model. Jednak przy pytaniach, które łączą zmienne CZY_KIER oraz STAŻ (podpunkt 2. i 3.) model przeszacował wyniki z dla osób o krótkim stażu oraz niedoszacował odpowiedzi w dla osób o długim stażu - wynika to z braku powiązanie między tymi zmiennymi. Jak widzimy, złe dobranie modelu skutkuje złym oszacowaniem badanych prawdopodobieństw.
+
+# Zadania dodatkowe
+
+## Zadanie 2\*
+
+Na podstawie danych z listy 1 dokonaj wyboru modelu rozważając uwzględnienie zmiennych PYT_1, PYT_2 i PŁEĆ w oparciu o:
+
+• testy,
+
+• kryterium AIC,
+
+• kryterium BIC.
+
+Będzimy roważać modele **\[1 2 3\]**, **\[12 13 23\]** oraz **\[123\]**.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+ankieta$PYT_1 <- factor(ankieta$PYT_1)
+ankieta$PYT_2 <- factor(ankieta$PYT_2)
+ankieta$PŁEĆ <- factor(ankieta$PŁEĆ)
+
+df <- as.data.frame(xtabs(~ PYT_1 + PYT_2 + PŁEĆ, data = ankieta))
+colnames(df) <- c("PYT_1", "PYT_2", "PŁEĆ", "Freq")
+
+model_full <- glm(Freq ~ PYT_1 * PYT_2 * PŁEĆ, data = df, family = poisson)
+
+model_12_13_23 <- glm(Freq ~ PYT_1 * PYT_2 + PYT_1 * PŁEĆ + PYT_2 * PŁEĆ, data = df, family = poisson)
+
+model_indep <- glm(Freq ~ PYT_1 + PYT_2 + PŁEĆ, data = df, family = poisson)
+
+anova(model_indep, model_12_13_23, model_full, test = "Chisq")
+```
+
+W tej analizie testujemy, czy model prostszy wystarcza ($H_0$), czy potrzebny jest model bardziej złożony ($H_1$). Testujemy, czy sensownie jest zmieniać model z \[1 2 3\] na \[12 13 23\] oraz \[12 13 23\] na \[123\]. Wykonujemy test istotności $\chi ^2$.
+
+**Interpretacja:**
+
+Model 1 (niezależność) jest zbyt prosty, ponieważ po dodaniu interakcji dwójkowych (Model 2) dopasowanie znacznie się poprawia (p \< 2e-16 więc odrzucamy $H_0$).
+
+Model 3 (pełny) nie poprawia istotnie dopasowania względem Modelu 2 (p = 0.8326, nie ma podstaw do odrzucenia $H_0$), więc interakcja trójkowa nie jest potrzebna.
+
+Ostateczny wybór: Model 2 – zawiera wszystkie istotne interakcje (dwójkowe), a jest prostszym modelem niż pełny.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+aic <- AIC(model_full, model_12_13_23, model_indep)
+bic <- BIC(model_full, model_12_13_23, model_indep)
+data.frame(
+  Model = rownames(aic),
+  AIC = aic$AIC,
+  BIC = bic$BIC
+)
+
+```
+
+Porównując **AIC** orac **BIC** widzimy, że dla obu kryteriów model \[12 13 23\] przymuje najmniejsze wartości, więc dla tego porównania jest najlepszy.
+
+Zarówno testy chi-kwadrat, jak i kryteria AIC/BIC wskazują, że najlepszym modelem jest model z interakcjami dwójkowymi: `Freq ~ PYT_1*PYT_2 + PYT_1*PŁEĆ + PYT_2*PŁEĆ`, oznaczany jako **\[12 13 23\]**.
