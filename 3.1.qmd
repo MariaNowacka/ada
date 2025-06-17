@@ -52,9 +52,15 @@ p <- function(n12, n21){
 
 ## Zadanie 2
 
+W tabeli 1 umieszczono dane dotyczące reakcji na lek po godzinie od jego przyjęcia dla dwóch różnych leków przeciwbólowych stosowanych w migrenie. Leki zostały zaaplikowane grupie pacjentów w dwóch różnych atakach bólowych. Na podstawie danych zweryfikuj hipotezę, że leki te są jednakowo skuteczne korzystając z testu.
+
+\- McNemara z poprawką na ciągłość,
+
+ - warunkowego (korzystając z funkcji zadeklarowanej w zadaniu 1.).
+
 ### Zadanie 2.1
 
-```{r}
+```{r, echo=FALSE}
 tabela <- matrix(c(1, 2, 5, 4), nrow = 2,
 dimnames = list("Lek A" = c("Negatywna", "Pozytywna"),
 "Lek B" = c("Negatywna", "Pozytywna")))
@@ -62,7 +68,7 @@ print(tabela)
 #test McNemara
 mcnemar.test(tabela, correct = TRUE)
 ```
-
+W celu porównania skuteczności dwóch leków przeciwbólowych stosowanych podczas dwóch różnych ataków migreny u tych samych pacjentów, zastosowano test McNemara z poprawką na ciągłość. Uzyskałyśmy w ten sposób p-value = 0.4447, co jest większe niż alpha = 0.05, więc brakuje podstaw do odrzucenia hipotezy zerowej mówiącej, że leki są jednakowo skuteczne.
 ### Zadanie 2.2
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
@@ -72,6 +78,8 @@ p(2,5)
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 binom.test(x = 2, n = 7, p = 0.5, alternative = "two.sided")$p.value
 ```
+W celu porównania skuteczności dwóch leków przeciwbólowych zastosowano test warunkowy w postaci testu dwumianowego (na podstawie 7 przypadków rozbieżnych odpowiedzi). Otrzymano wartość p-value = 0.4531, co jest znacznie większe od przyjętego poziomu istotności α = 0.05. Nie ma podstaw do odrzucenia hipotezy zerowej, zakładającej jednakową skuteczność leków. Na podstawie testu warunkowego nie wykazano istotnej różnicy w skuteczności obu leków przeciwbólowych stosowanych w migrenie.
+
 
 ## Zadanie 3
 
@@ -142,6 +150,11 @@ Widzimy, że dla mniejszych $n$ test $Z$ ma większą moc od testu $Z_0$. Dla wi
 
 ## Zadanie 4
 
+Dla danych dołączonych do pierwszej listy zadań, na podstawie zmiennych CZY_ZADW oraz CZY_ZADW_2, zweryfikuj hipotezę, że zadowolenie ze szkoleń w pierwszym badanym okresie i w drugim badanym okresie pierwszego badania odpowiada modelowi symetrii. Czy na podstawie uzyskanych wyników możemy wnioskować, że poziom zadowolenia ze szkoleń nie uległ zmianie? Przyjmij poziom istotności 0.05.
+
+**Cel zadania**
+Sprawdzić, czy dwa różne leki przeciwbólowe podawane tym samym pacjentom w dwóch atakach migreny są jednakowo skuteczne. Testowana hipoteza zerowa: oba leki są jednakowo skuteczne.
+
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
 ankieta <- ankieta |>
@@ -160,6 +173,7 @@ ankieta <- ankieta |> mutate(
 tabela <- table(ankieta$CZY_ZADOW, ankieta$CZY_ZADOW2)
 mcnemar.test(tabela, correct = TRUE)
 ```
+Ponieważ p < 0.05, istnieją statystyczne podstawy do odrzucenia hipotezy zerowej, zakładającej brak zmiany w poziomie zadowolenia. Można przyjąć, że zadowolenie respondentów ze szkoleń uległo istotnej zmianie między pierwszym a drugim okresem badania.
 
 ## Zadanie 5
 
@@ -398,7 +412,7 @@ Dla danych wskazanych w zadaniu 7 zweryfikuj następujące hipotezy:
 
 Celem zadania jest weryfikacja zależności pomiędzy trzema zmiennymi kategorycznymi: CZY_KIER (czy osoba pracuje na stanowisku kierowniczym), PYT_2 (ocena szkolenia) oraz STAŻ (długość stażu pracy). Analiza oparta jest na modelach log-liniowych, które umożliwiają badanie zarówno pełnej niezależności pomiędzy wszystkimi zmiennymi, jak i zależności marginalnych oraz warunkowych.
 
-```{r, echo=FALSE, warning=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(MASS)
 
 CZY_KIER <- ankieta$CZY_KIER
@@ -525,7 +539,7 @@ anova(M0_c, M1_c2, test = "Chisq")
 
 W obu przypadkach wartości p są znacznie większe od przyjętego poziomu istotności α = 0.05, co oznacza, że nie ma statystycznych podstaw do odrzucenia hipotezy zerowej. Innymi słowy, nie stwierdzono istotnych zależności pomiędzy odpowiedziami na pytanie PYT_2 a statusem kierowniczym, jeżeli uwzględnimy staż pracy.
 
-\# Zadania dodatkowe
+## Zadania dodatkowe
 
 ## Zadanie 1\*
 
