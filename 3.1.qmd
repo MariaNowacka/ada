@@ -3,7 +3,7 @@ format: pdf
 editor: visual
 ---
 
-## Lista 3
+# Lista 3
 
 Celem niniejszego raportu jest pogłębiona analiza danych ankietowych z wykorzystaniem wybranych metod statystycznych. Zakres analizy obejmuje zarówno testy symetrii dla danych sparowanych, jak i symulacyjne porównanie mocy testów statystycznych, a także modelowanie zależności między zmiennymi za pomocą modeli log-liniowych.
 
@@ -56,7 +56,7 @@ W tabeli 1 umieszczono dane dotyczące reakcji na lek po godzinie od jego przyj�
 
 \- McNemara z poprawką na ciągłość,
 
- - warunkowego (korzystając z funkcji zadeklarowanej w zadaniu 1.).
+-   warunkowego (korzystając z funkcji zadeklarowanej w zadaniu 1.).
 
 ### Zadanie 2.1
 
@@ -68,7 +68,9 @@ print(tabela)
 #test McNemara
 mcnemar.test(tabela, correct = TRUE)
 ```
+
 W celu porównania skuteczności dwóch leków przeciwbólowych stosowanych podczas dwóch różnych ataków migreny u tych samych pacjentów, zastosowano test McNemara z poprawką na ciągłość. Uzyskałyśmy w ten sposób p-value = 0.4447, co jest większe niż alpha = 0.05, więc brakuje podstaw do odrzucenia hipotezy zerowej mówiącej, że leki są jednakowo skuteczne.
+
 ### Zadanie 2.2
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
@@ -78,8 +80,8 @@ p(2,5)
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 binom.test(x = 2, n = 7, p = 0.5, alternative = "two.sided")$p.value
 ```
-W celu porównania skuteczności dwóch leków przeciwbólowych zastosowano test warunkowy w postaci testu dwumianowego (na podstawie 7 przypadków rozbieżnych odpowiedzi). Otrzymano wartość p-value = 0.4531, co jest znacznie większe od przyjętego poziomu istotności α = 0.05. Nie ma podstaw do odrzucenia hipotezy zerowej, zakładającej jednakową skuteczność leków. Na podstawie testu warunkowego nie wykazano istotnej różnicy w skuteczności obu leków przeciwbólowych stosowanych w migrenie.
 
+W celu porównania skuteczności dwóch leków przeciwbólowych zastosowano test warunkowy w postaci testu dwumianowego (na podstawie 7 przypadków rozbieżnych odpowiedzi). Otrzymano wartość p-value = 0.4531, co jest znacznie większe od przyjętego poziomu istotności α = 0.05. Nie ma podstaw do odrzucenia hipotezy zerowej, zakładającej jednakową skuteczność leków. Na podstawie testu warunkowego nie wykazano istotnej różnicy w skuteczności obu leków przeciwbólowych stosowanych w migrenie.
 
 ## Zadanie 3
 
@@ -152,8 +154,7 @@ Widzimy, że dla mniejszych $n$ test $Z$ ma większą moc od testu $Z_0$. Dla wi
 
 Dla danych dołączonych do pierwszej listy zadań, na podstawie zmiennych CZY_ZADW oraz CZY_ZADW_2, zweryfikuj hipotezę, że zadowolenie ze szkoleń w pierwszym badanym okresie i w drugim badanym okresie pierwszego badania odpowiada modelowi symetrii. Czy na podstawie uzyskanych wyników możemy wnioskować, że poziom zadowolenia ze szkoleń nie uległ zmianie? Przyjmij poziom istotności 0.05.
 
-**Cel zadania**
-Sprawdzić, czy dwa różne leki przeciwbólowe podawane tym samym pacjentom w dwóch atakach migreny są jednakowo skuteczne. Testowana hipoteza zerowa: oba leki są jednakowo skuteczne.
+**Cel zadania** Sprawdzić, czy dwa różne leki przeciwbólowe podawane tym samym pacjentom w dwóch atakach migreny są jednakowo skuteczne. Testowana hipoteza zerowa: oba leki są jednakowo skuteczne.
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -173,7 +174,8 @@ ankieta <- ankieta |> mutate(
 tabela <- table(ankieta$CZY_ZADOW, ankieta$CZY_ZADOW2)
 mcnemar.test(tabela, correct = TRUE)
 ```
-Ponieważ p < 0.05, istnieją statystyczne podstawy do odrzucenia hipotezy zerowej, zakładającej brak zmiany w poziomie zadowolenia. Można przyjąć, że zadowolenie respondentów ze szkoleń uległo istotnej zmianie między pierwszym a drugim okresem badania.
+
+Ponieważ p \< 0.05, istnieją statystyczne podstawy do odrzucenia hipotezy zerowej, zakładającej brak zmiany w poziomie zadowolenia. Można przyjąć, że zadowolenie respondentów ze szkoleń uległo istotnej zmianie między pierwszym a drugim okresem badania.
 
 ## Zadanie 5
 
@@ -238,7 +240,9 @@ test_LW(dane)
 
 ```
 
-**Wnioski** P-value wynosi 0.206, co jest większe od przyjętego poziomu istotności alpha = 0.05. Oznacza to, że brak podstaw do odrzucenia hipotezy o symetrii rozkładu odpowiedzi w dwóch badanych okresach. Nie stwierdzono istotnej statystycznie zmiany oceny podejścia firmy do umożliwiania wdrażania wiedzy zdobytej na szkoleniach. Odpowiedzi respondentów przed i po wdrożeniu działań poprawiających komfort pracy można uznać za zgodne z modelem symetrii. \# Część III
+**Wnioski** P-value wynosi 0.206, co jest większe od przyjętego poziomu istotności alpha = 0.05. Oznacza to, że brak podstaw do odrzucenia hipotezy o symetrii rozkładu odpowiedzi w dwóch badanych okresach. Nie stwierdzono istotnej statystycznie zmiany oceny podejścia firmy do umożliwiania wdrażania wiedzy zdobytej na szkoleniach. Odpowiedzi respondentów przed i po wdrożeniu działań poprawiających komfort pracy można uznać za zgodne z modelem symetrii.
+
+# Część III
 
 ## Zadanie 6
 
@@ -428,7 +432,7 @@ a)  Wzajemna niezależność \[1\]\[2\]\[3\]
 
 Rozważmy 3 nadmodele, np. \[12 23\], \[13 23\], \[123\]
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message = FALSE}
 M0 <- glm(LICZBA ~ CZY_KIER + PYT_2 + STAZ, family = poisson, data = df_aggr)
 
 M1 <- glm(LICZBA ~ CZY_KIER * PYT_2 + PYT_2 * STAZ, family = poisson, data = df_aggr)
@@ -539,7 +543,7 @@ anova(M0_c, M1_c2, test = "Chisq")
 
 W obu przypadkach wartości p są znacznie większe od przyjętego poziomu istotności α = 0.05, co oznacza, że nie ma statystycznych podstaw do odrzucenia hipotezy zerowej. Innymi słowy, nie stwierdzono istotnych zależności pomiędzy odpowiedziami na pytanie PYT_2 a statusem kierowniczym, jeżeli uwzględnimy staż pracy.
 
-## Zadania dodatkowe
+# Zadania dodatkowe
 
 ## Zadanie 1\*
 
